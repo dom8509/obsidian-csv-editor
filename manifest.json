@@ -1,11 +1,11 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"id": "obsidian-csv-file-editor",
+	"name": "CSV File Editor",
+	"version": "0.0.1",
+	"minAppVersion": "1.1.1",
+	"description": "Open and edit CSV Files in Obsidian.",
+	"author": "dom8509",
+	"authorUrl": "https://github.com/dom8509",
+	"fundingUrl": "https://www.buymeacoffee.com/dom8509",
 	"isDesktopOnly": false
 }

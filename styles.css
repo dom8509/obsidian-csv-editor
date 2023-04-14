@@ -1,8 +1,8 @@
-/*
-
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
-
-If your plugin does not need CSS, delete this file.
-
-*/
+.csv-table {
+  width: 100%;
+}
+.csv-error {
+  font-weight: 700;
+  padding: 10em;
+  border: 1px solid #f00;
+}

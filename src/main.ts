@@ -1,6 +1,7 @@
 import {
     App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting
 } from 'obsidian';
+import { CsvView, VIEW_TYPE_CSV } from 'src/views/CsvView';
 
 interface CsvTablePluginSettings {
 	mySetting: string;
@@ -16,7 +17,8 @@ export default class CsvTablePlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.registerExtensions(["csv"], "csv");
+		this.registerView(VIEW_TYPE_CSV, (leaf) => new CsvView(leaf));
+		this.registerExtensions(["csv"], VIEW_TYPE_CSV);
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon(

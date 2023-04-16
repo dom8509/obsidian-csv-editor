@@ -74,9 +74,11 @@ export class CsvView extends TextFileView {
 			console.log(columns);
 			console.log("columns");
 			console.log(tableData);
+
 			const table = createTable(columns, tableData);
 			this.rootContainer?.render(table);
-			console.log(table);
+			// this.rootContainer?.render(createDummy())
+			// console.log(table);
 
 			// const headerData: Record<string, unknown> = csvData.data[0];
 			// for (const headerEntry of headerData) {

@@ -145,6 +145,8 @@ export default class DataSheet extends React.Component<
 	}
 
 	isSelectionControlled() {
+		console.log("In isSelectionControlled")
+		console.log(this.props)
 		return "selected" in this.props;
 	}
 
@@ -160,6 +162,7 @@ export default class DataSheet extends React.Component<
 	}
 
 	_setState(state: any) {
+		console.log("In setState")
 		const { editModeChanged } = this.props;
 		if (editModeChanged && state.editing) {
 			const wasEditing = !isEmpty(this.state.editing);
@@ -174,18 +177,22 @@ export default class DataSheet extends React.Component<
 		) {
 			// eslint-disable-next-line prefer-const
 			let { start, end, ...rest } = state;
-			let { selected } = this.props;
-			selected = selected || {};
+			const { selected } = this.props;
 			if (!start) {
 				start =
-					"start" in selected
+					selected && "start" in selected
 						? selected.start
 						: this.defaultState.start;
 			}
 			if (!end) {
-				end = "end" in selected ? selected.end : this.defaultState.end;
+				end =
+					selected && "end" in selected
+						? selected.end
+						: this.defaultState.end;
 			}
 			const { onSelect } = this.props;
+			console.log("onSelect")
+			console.log(onSelect)
 			onSelect && onSelect({ start, end });
 			this.setState(rest);
 		} else {
@@ -839,47 +846,65 @@ export default class DataSheet extends React.Component<
 						.filter((a) => a)
 						.join(" ")}
 				>
-					{data.map((row, i) => (
-						<RowRenderer
-							key={keyFn ? keyFn(i) : i}
-							row={i}
-							cells={row}
-							selected={this.isSelectedRow(i)}
-						>
-							{row.map((cell, j) => {
-								const isEditing = this.isEditing(i, j);
-								return (
-									<DataCell
-										key={cell.key ? cell.key : `${i}-${j}`}
-										row={i}
-										col={j}
-										cell={cell}
-										forceEdit={false}
-										onMouseDown={this.onMouseDown}
-										onMouseOver={this.onMouseOver}
-										onDoubleClick={this.onDoubleClick}
-										onContextMenu={this.onContextMenu}
-										onChange={this.onChange}
-										onRevert={this.onRevert}
-										onNavigate={
-											this.handleKeyboardCellMovement
-										}
-										onKey={this.handleKey}
-										selected={this.isSelected(i, j)}
-										editing={isEditing}
-										clearing={this.isClearing(i, j)}
-										attributesRenderer={attributesRenderer}
-										cellRenderer={cellRenderer}
-										valueRenderer={valueRenderer}
-										dataRenderer={dataRenderer}
-										valueViewer={valueViewer}
-										dataEditor={dataEditor}
-										{...(isEditing ? { forceEdit } : {})}
-									/>
-								);
-							})}
-						</RowRenderer>
-					))}
+					{data.map((row, i) => {
+						// console.log("in row renderer");
+						// console.log(row);
+						// console.log(i);
+						// console.log("end in row renderer");
+						return (
+							<RowRenderer
+								key={keyFn ? keyFn(i) : i}
+								row={i}
+								cells={row}
+								selected={this.isSelectedRow(i)}
+							>
+								{row.map((cell, j) => {
+									const isEditing = this.isEditing(i, j);
+									// console.log("in cell renderer");
+									// console.log(cell);
+									// console.log(j);
+									// console.log("end in cell renderer");
+									return (
+										<DataCell
+											key={
+												cell.key
+													? cell.key
+													: `${i}-${j}`
+											}
+											row={i}
+											col={j}
+											cell={cell}
+											forceEdit={false}
+											onMouseDown={this.onMouseDown}
+											onMouseOver={this.onMouseOver}
+											onDoubleClick={this.onDoubleClick}
+											onContextMenu={this.onContextMenu}
+											onChange={this.onChange}
+											onRevert={this.onRevert}
+											onNavigate={
+												this.handleKeyboardCellMovement
+											}
+											onKey={this.handleKey}
+											selected={this.isSelected(i, j)}
+											editing={isEditing}
+											clearing={this.isClearing(i, j)}
+											attributesRenderer={
+												attributesRenderer
+											}
+											cellRenderer={cellRenderer}
+											valueRenderer={valueRenderer}
+											dataRenderer={dataRenderer}
+											valueViewer={valueViewer}
+											dataEditor={dataEditor}
+											{...(isEditing
+												? { forceEdit }
+												: {})}
+										/>
+									);
+								})}
+							</RowRenderer>
+						);
+					})}
 				</SheetRenderer>
 			</span>
 		);

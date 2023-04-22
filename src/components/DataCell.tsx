@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Cell from './Cell';
 import { CellShapeType } from './CellShape';
 import DataEditor from './DataEditor';
 import { DOWN_KEY, ENTER_KEY, ESCAPE_KEY, LEFT_KEY, RIGHT_KEY, TAB_KEY, UP_KEY } from './keys';
@@ -13,17 +14,16 @@ export interface DataCellProps {
 	col: number;
 	cell: CellShapeType;
 	forceEdit: boolean;
-	selected: boolean;
-	editing: boolean;
-	editValue: any;
-	clearing: boolean;
-	timeout: number;
-	cellRenderer: FunctionType;
+	selected?: boolean;
+	editing?: boolean;
+	editValue?: any;
+	clearing?: boolean;
+	cellRenderer?: FunctionType;
 	valueRenderer: FunctionType;
-	dataRenderer: FunctionType;
-	valueViewer: FunctionType;
-	dataEditor: FunctionType;
-	attributesRenderer: FunctionType;
+	dataRenderer?: FunctionType;
+	valueViewer?: FunctionType;
+	dataEditor?: FunctionType;
+	attributesRenderer?: FunctionType;
 	onNavigate: FunctionType;
 	onMouseDown: FunctionType;
 	onMouseOver: FunctionType;
@@ -31,17 +31,10 @@ export interface DataCellProps {
 	onContextMenu: FunctionType;
 	onChange: FunctionType;
 	onRevert: FunctionType;
-	onEdit: FunctionType;
-	onKeyUp: FunctionType;
+	onEdit?: FunctionType;
+	onKeyUp?: FunctionType;
+	onKey: FunctionType;
 }
-
-// type InitialDataType = {
-// 	forceEdit: false,
-// 	selected: false,
-// 	editing: false,
-// 	clearing: false,
-// 	cellRenderer: Cell,
-// };
 
 interface DataSheetState {
 	reverting: boolean;
@@ -75,6 +68,14 @@ export default class DataCell extends React.Component<
 	DataSheetState
 > {
 	timeout: NodeJS.Timeout;
+
+	static defaultProps = {
+		forceEdit: false,
+		selected: false,
+		editing: false,
+		clearing: false,
+		cellRenderer: Cell,
+	};
 
 	constructor(props: DataCellProps) {
 		super(props);
@@ -280,6 +281,9 @@ export default class DataCell extends React.Component<
 			.filter((a) => a)
 			.join(" ");
 
+		// console.log("Cell in renderer")
+		// console.log(cell)
+		console.log("ClassName: ", className)
 		return (
 			<CellRenderer
 				row={row}

@@ -10,6 +10,8 @@ export interface RowProps {
 
 export default class Row extends React.Component<RowProps> {
 	render() {
+		console.log("Row:")
+		console.log(this.props);
 		return <tr>{this.props.children}</tr>;
 	}
 }

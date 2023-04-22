@@ -47,7 +47,7 @@ export default class Cell extends React.Component<CellProps> {
 		const attributes = attributesRenderer
 			? attributesRenderer(cell, row, col)
 			: {};
-			
+
 		return (
 			<td
 				className={className}

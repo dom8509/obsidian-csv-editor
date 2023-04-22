@@ -1,11 +1,14 @@
-
 import { createSheet } from 'components';
-import { CsvSheetData } from 'components/CsvSheet';
+import { CsvSheetColumnType, CsvSheetDataType } from 'components/CsvSheet';
 import { TextFileView, WorkspaceLeaf } from 'obsidian';
 import { parse, ParseResult } from 'papaparse';
 import { createRoot, Root } from 'react-dom/client';
 
 export const VIEW_TYPE_CSV = "csv-view";
+
+const convertToKey = (str: string) => {
+	return str.toLowerCase().split(" ").join("-");
+}
 
 export class CsvView extends TextFileView {
 	tableContainer: HTMLDivElement | null = null;
@@ -51,62 +54,55 @@ export class CsvView extends TextFileView {
 	}
 
 	setViewData(data: string, clear: boolean): void {
-		console.log("SetViewData");
+		// console.log("SetViewData");
 		this.data = data;
-		console.log(clear);
-		console.log(data);
+		// console.log(clear);
+		// console.log(data);
 		const csvData: ParseResult<Record<string, unknown>> = parse(data, {
 			header: true,
 			dynamicTyping: true,
 		});
 
-		console.log(data);
-		// const columns: Array<SheetColumn> = [];
-		const tableData: CsvSheetData = [];
+		// console.log(data);
+		// const tableColumns: Array<CsvSheetColumnType> = [];
+		const tableData: CsvSheetDataType = [];
 		if (csvData.data.length > 0 && csvData.meta.fields) {
-			// if (csvData.meta.fields) {
-			// 	csvData.meta.fields.forEach((column) => {
-			// 		columns.push({ key: column, name: column, width: 20 });
-			// 	});
-			// }
+			if (csvData.meta.fields) {
 
-			// csvData.meta.fields.forEach((column) => {
-			// 	columns.push({ label: column, width: 120 });
-			// });
+				const dataRow: any = [];
+				dataRow.push({ value: "" , readOnly: true });
+				csvData.meta.fields.forEach((column) => {
+					// console.log("Columns: ");
+					// console.log(column);
+					dataRow.push({ value: column, readOnly: true });
+					
+					// tableColumns.push({ key: convertToKey(column), name: column, width: 20 });
+				});
+
+				tableData.push(dataRow);
+			} else {
+				console.log("")
+			}
+
+
+			// console.log("tableColumns");
+			// console.log(tableColumns);
 
 			csvData.data.forEach((row, idx) => {
-				console.log("Row:");
-				console.log(row);
+				// console.log("Row:");
+				// console.log(row);
 				const dataRow: any = [];
-				// dataRow.push({ readOnly: true, value: idx });
+				dataRow.push({ value: idx+1, readOnly: true });
 				csvData.meta.fields?.forEach((column) => {
-					dataRow.push({value: row[column]});
+					dataRow.push({ value: row[column] });
 				});
 				tableData.push(dataRow);
 			});
 
-			// console.log("columns");
-			// console.log(columns);
-			// console.log("columns");
-			// console.log(tableData);
-
-			// const table = createTable(columns, tableData);
-			// this.rootContainer?.render(table);
-			const sheet = createSheet(tableData);
+			const sheet = createSheet({
+				data: tableData,
+			});
 			this.rootContainer?.render(sheet);
-			// console.log(table);
-
-			// const headerData: Record<string, unknown> = csvData.data[0];
-			// for (const headerEntry of headerData) {
-			// 	columns.push({
-			// 		key: this.convertToColumsKey(headerEntry),
-			// 		name: headerEntry,
-			// 	}: Array<string, string>);
-			// }
-			// console.log("test");
-			// console.log(csvData.data.length);
-			// console.log(csvData.meta.fields);
-			// console.log(csvData);
 		}
 	}
 

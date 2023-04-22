@@ -17,7 +17,7 @@ export function renderData(
 	row: number,
 	col: number,
 	valueRenderer: FunctionType,
-	dataRenderer: FunctionType
+	dataRenderer?: FunctionType
 ) {
 	const value = dataRenderer ? dataRenderer(cell, row, col) : null;
 	return value === null || typeof value === "undefined"

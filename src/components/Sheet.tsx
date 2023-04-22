@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 
 export interface SheetProps {
 	className: string;
+	data: Array<any>;
 	children?: ReactNode;
 }
 

@@ -1,5 +1,6 @@
 
 import { createSheet } from 'components';
+import { CsvSheetData } from 'components/CsvSheet';
 import { TextFileView, WorkspaceLeaf } from 'obsidian';
 import { parse, ParseResult } from 'papaparse';
 import { createRoot, Root } from 'react-dom/client';
@@ -60,8 +61,8 @@ export class CsvView extends TextFileView {
 		});
 
 		console.log(data);
-		const columns: Array<SheetColumn> = [];
-		let tableData: Array<SheetRow> = [];
+		// const columns: Array<SheetColumn> = [];
+		const tableData: CsvSheetData = [];
 		if (csvData.data.length > 0 && csvData.meta.fields) {
 			// if (csvData.meta.fields) {
 			// 	csvData.meta.fields.forEach((column) => {
@@ -69,15 +70,15 @@ export class CsvView extends TextFileView {
 			// 	});
 			// }
 
-			csvData.meta.fields.forEach((column) => {
-				columns.push({ label: column, width: 120 });
-			});
+			// csvData.meta.fields.forEach((column) => {
+			// 	columns.push({ label: column, width: 120 });
+			// });
 
 			csvData.data.forEach((row, idx) => {
 				console.log("Row:");
 				console.log(row);
-				const dataRow = [];
-				dataRow.push({ readOnly: true, value: idx });
+				const dataRow: any = [];
+				// dataRow.push({ readOnly: true, value: idx });
 				csvData.meta.fields?.forEach((column) => {
 					dataRow.push({value: row[column]});
 				});
@@ -91,7 +92,7 @@ export class CsvView extends TextFileView {
 
 			// const table = createTable(columns, tableData);
 			// this.rootContainer?.render(table);
-			const sheet = createSheet(columns, tableData);
+			const sheet = createSheet(tableData);
 			this.rootContainer?.render(sheet);
 			// console.log(table);
 

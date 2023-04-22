@@ -10,13 +10,17 @@ interface GridElement extends CellShapeType {
 	value: number | null;
 }
 
+export type CsvSheetData = Array<Array<GridElement>>;
+
 class CsvDataSheet extends DataSheet {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface CsvSheetProps {}
+export interface CsvSheetProps {
+	data: CsvSheetData;
+}
 
 interface CsvSheetState {
-	grid: Array<Array<GridElement>>;
+	grid: CsvSheetData;
 }
 
 //You can also strongly type all the Components or SFCs that you pass into ReactDataSheet.
@@ -42,24 +46,29 @@ export class CsvSheet extends React.Component<CsvSheetProps, CsvSheetState> {
 		super(props);
 
 		this.state = {
-			grid: [
-				[{ value: 1 }, { value: -3 }],
-				[{ value: -2 }, { value: 4 }],
-			],
+			grid: this.props.data,
 		};
 
-        console.log(this.state);
+		// this.state = {
+		// 	grid: [
+		// 		[{ value: 1 }, { value: -3 }],
+		// 		[{ value: -2 }, { value: 4 }],
+		// 	],
+		// };
+
+		console.log(this.state);
 	}
 	render() {
 		return (
+            //TODO: Handle empty data
 			<CsvDataSheet
 				data={this.state.grid}
 				valueRenderer={(cell) => {
-                    console.log("In valueRenderer");
-                    return cell.value;
-                }}
+					console.log("In valueRenderer");
+					return cell.value;
+				}}
 				onCellsChanged={(changes) => {
-                    console.log("In onCellsChanged");
+					console.log("In onCellsChanged");
 					const grid = this.state.grid.map((row) => [...row]);
 					changes.forEach(({ row, col, value }: ValueViewerProps) => {
 						grid[row][col] = { ...grid[row][col], value };

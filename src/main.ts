@@ -1,7 +1,7 @@
 import {
     App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting
 } from 'obsidian';
-import { CsvView, VIEW_TYPE_CSV } from 'src/views/CsvView';
+import { CsvView, VIEW_TYPE_CSV } from 'views/CsvView';
 
 interface CsvTablePluginSettings {
 	mySetting: string;

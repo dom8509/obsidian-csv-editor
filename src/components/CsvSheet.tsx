@@ -6,7 +6,7 @@ import { CellShapeType } from './CellShape';
 import DataSheet from './DataSheet';
 import { ValueViewerProps } from './ValueViewer';
 
-interface GridElement extends CellShapeType {
+export interface GridElement extends CellShapeType {
 	value: number | null;
 }
 
@@ -31,8 +31,6 @@ const sheetRenderer: any = (
 	props: any,
 	columns: Array<CsvSheetColumnType> | undefined
 ) => {
-	// console.log("Data in custom SheetRenderer:");
-	// console.log(props);
 	return (
 		<table className={props.className + " my-awesome-extra-class"}>
 			{columns && (

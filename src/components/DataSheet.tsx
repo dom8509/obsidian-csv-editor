@@ -1,12 +1,15 @@
 import React from 'react';
 
 import Cell from './Cell';
+import { CellShapeType } from './CellShape';
+import { COLUMN_HEADER_IDX } from './ColumnHeader';
 import DataCell from './DataCell';
 import DataEditor from './DataEditor';
 import {
     BACKSPACE_KEY, DELETE_KEY, DOWN_KEY, ENTER_KEY, ESCAPE_KEY, LEFT_KEY, RIGHT_KEY, TAB_KEY, UP_KEY
 } from './keys';
 import Row from './Row';
+import RowHeader, { ROW_HEADER_IDX } from './RowHeader';
 import Sheet from './Sheet';
 import ValueViewer from './ValueViewer';
 
@@ -50,7 +53,7 @@ export interface DataSheetProps {
 interface DataSheetState {
 	start?: SelectedCellType;
 	end?: SelectedCellType;
-	selecting: boolean;
+	selecting: boolean; // indicates if click and hold is active
 	forceEdit: boolean;
 	editing?: SelectedCellType;
 	clear?: SelectedCellType;
@@ -100,6 +103,7 @@ export default class DataSheet extends React.Component<
 		this.handleCut = this.handleCut.bind(this);
 		this.handleCopy = this.handleCopy.bind(this);
 		this.handlePaste = this.handlePaste.bind(this);
+		this.onRowHeaderClick = this.onRowHeaderClick.bind(this);
 		this.pageClick = this.pageClick.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.onRevert = this.onRevert.bind(this);
@@ -161,8 +165,8 @@ export default class DataSheet extends React.Component<
 		return state;
 	}
 
-	_setState(state: any) {
-		console.log("In setState")
+	_setState(state: DataSheetState) {
+		console.log("In setState");
 		const { editModeChanged } = this.props;
 		if (editModeChanged && state.editing) {
 			const wasEditing = !isEmpty(this.state.editing);
@@ -191,13 +195,29 @@ export default class DataSheet extends React.Component<
 						: this.defaultState.end;
 			}
 			const { onSelect } = this.props;
-			console.log("onSelect")
-			console.log(onSelect)
 			onSelect && onSelect({ start, end });
 			this.setState(rest);
 		} else {
 			this.setState(state);
 		}
+	}
+
+	onRowHeaderClick(i: number, j: number, e: MouseEvent) {
+		const endOfLineIdx =
+			this.props.data.length > 0 ? this.props.data[0].length : 0;
+
+		this._setState({
+			selecting: false,
+			start: { i, j: 0 },
+			end: { i, j: endOfLineIdx },
+			editing: true,
+			forceEdit: false,
+		});
+
+		// Cut, copy and paste event handlers
+		document.addEventListener("cut", this.handleCut);
+		document.addEventListener("copy", this.handleCopy);
+		document.addEventListener("paste", this.handlePaste);
 	}
 
 	pageClick(e: MouseEvent) {
@@ -683,7 +703,10 @@ export default class DataSheet extends React.Component<
 	}
 
 	onDoubleClick(i: number, j: number) {
+		console.log("in onDoubleClick")
 		const cell = this.props.data[i][j];
+		console.log("cell: ")
+		console.log(cell);
 		if (!cell.readOnly) {
 			this._setState({
 				editing: { i: i, j: j },
@@ -713,13 +736,6 @@ export default class DataSheet extends React.Component<
 			editing: editing,
 			forceEdit: !!isNowEditingSameCell,
 		});
-
-		const ua = window.navigator.userAgent;
-		const isIE = /MSIE|Trident/.test(ua);
-		// Listen for Ctrl + V in case of IE
-		if (isIE) {
-			document.addEventListener("keydown", this.handleIEClipboardEvents);
-		}
 
 		// Keep listening to mouse if user releases the mouse (dragging outside)
 		document.addEventListener("mouseup", this.onMouseUp);
@@ -775,6 +791,7 @@ export default class DataSheet extends React.Component<
 	}
 
 	isSelectedRow(rowIndex: number) {
+		console.log("In isSelectedRow");
 		const { start, end } = this.getState();
 		if (start && end) {
 			const startY = start.i;
@@ -847,10 +864,9 @@ export default class DataSheet extends React.Component<
 						.join(" ")}
 				>
 					{data.map((row, i) => {
-						// console.log("in row renderer");
-						// console.log(row);
-						// console.log(i);
-						// console.log("end in row renderer");
+						const vertSeperator: CellShapeType = {
+							className: "vert-separator",
+						};
 						return (
 							<RowRenderer
 								key={keyFn ? keyFn(i) : i}
@@ -858,6 +874,10 @@ export default class DataSheet extends React.Component<
 								cells={row}
 								selected={this.isSelectedRow(i)}
 							>
+								<RowHeader
+									row={i}
+									onMouseDown={this.onRowHeaderClick}
+								/>
 								{row.map((cell, j) => {
 									const isEditing = this.isEditing(i, j);
 									// console.log("in cell renderer");
@@ -865,41 +885,77 @@ export default class DataSheet extends React.Component<
 									// console.log(j);
 									// console.log("end in cell renderer");
 									return (
-										<DataCell
-											key={
-												cell.key
-													? cell.key
-													: `${i}-${j}`
-											}
-											row={i}
-											col={j}
-											cell={cell}
-											forceEdit={false}
-											onMouseDown={this.onMouseDown}
-											onMouseOver={this.onMouseOver}
-											onDoubleClick={this.onDoubleClick}
-											onContextMenu={this.onContextMenu}
-											onChange={this.onChange}
-											onRevert={this.onRevert}
-											onNavigate={
-												this.handleKeyboardCellMovement
-											}
-											onKey={this.handleKey}
-											selected={this.isSelected(i, j)}
-											editing={isEditing}
-											clearing={this.isClearing(i, j)}
-											attributesRenderer={
-												attributesRenderer
-											}
-											cellRenderer={cellRenderer}
-											valueRenderer={valueRenderer}
-											dataRenderer={dataRenderer}
-											valueViewer={valueViewer}
-											dataEditor={dataEditor}
-											{...(isEditing
-												? { forceEdit }
-												: {})}
-										/>
+										<>
+											<DataCell
+												key={`${i}-${j}-vert-sep`}
+												row={i}
+												col={j}
+												cell={vertSeperator}
+												forceEdit={forceEdit}
+												onMouseDown={this.onMouseDown}
+												onMouseOver={this.onMouseOver}
+												onDoubleClick={() => {}}
+												onContextMenu={
+													this.onContextMenu
+												}
+												onChange={this.onChange}
+												onRevert={this.onRevert}
+												onNavigate={
+													this
+														.handleKeyboardCellMovement
+												}
+												onKey={this.handleKey}
+												selected={false}
+												editing={false}
+												clearing={false}
+												attributesRenderer={() => {}}
+												cellRenderer={cellRenderer}
+												valueRenderer={valueRenderer}
+												dataRenderer={dataRenderer}
+												valueViewer={valueViewer}
+												dataEditor={dataEditor}
+											/>
+											<DataCell
+												key={
+													cell.key
+														? cell.key
+														: `${i}-${j}`
+												}
+												row={i}
+												col={j}
+												cell={cell}
+												forceEdit={forceEdit}
+												onMouseDown={this.onMouseDown}
+												onMouseOver={this.onMouseOver}
+												onDoubleClick={
+													this.onDoubleClick
+												}
+												onContextMenu={
+													this.onContextMenu
+												}
+												onChange={this.onChange}
+												onRevert={this.onRevert}
+												onNavigate={
+													this
+														.handleKeyboardCellMovement
+												}
+												onKey={this.handleKey}
+												selected={this.isSelected(i, j)}
+												editing={isEditing}
+												clearing={this.isClearing(i, j)}
+												attributesRenderer={
+													attributesRenderer
+												}
+												cellRenderer={cellRenderer}
+												valueRenderer={valueRenderer}
+												dataRenderer={dataRenderer}
+												valueViewer={valueViewer}
+												dataEditor={dataEditor}
+												{...(isEditing
+													? { forceEdit }
+													: {})}
+											/>
+										</>
 									);
 								})}
 							</RowRenderer>

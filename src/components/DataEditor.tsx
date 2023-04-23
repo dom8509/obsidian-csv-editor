@@ -34,7 +34,7 @@ export default class DataEditor extends React.Component<
 		this._input.focus();
 	}
 
-	handleChange(e) {
+	handleChange(e: any) {
 		this.props.onChange(e.target.value);
 	}
 

@@ -28,13 +28,13 @@ interface CsvSheetState {
 }
 
 const sheetRenderer: any = (
-	data: any,
+	props: any,
 	columns: Array<CsvSheetColumnType> | undefined
 ) => {
-	// console.log("Data in SheetRenderer:");
-	// console.log(data);
+	// console.log("Data in custom SheetRenderer:");
+	// console.log(props);
 	return (
-		<table className={data.className + " my-awesome-extra-class"}>
+		<table className={props.className + " my-awesome-extra-class"}>
 			{columns && (
 				<thead>
 					<tr>
@@ -45,15 +45,14 @@ const sheetRenderer: any = (
 					</tr>
 				</thead>
 			)}
-			<tbody>{data.children}</tbody>
+			<tbody>{props.children}</tbody>
 		</table>
 	);
 };
 
-const rowRenderer: any = (data: any) => {
-    // console.log("Children:");
-    // console.log(data.children);
-    // console.log(data)
+const rowRenderer: any = (props: any) => {
+    // console.log("Data in Custom RowRenderer:");
+    // console.log(props)
 
     // const cellValue: GridElement = {value: data.row + 1};
 
@@ -87,7 +86,7 @@ const rowRenderer: any = (data: any) => {
 				valueViewer={ValueViewer}
 				// dataEditor={dataEditor}
 			/> */}
-			{data.children}
+			{props.children}
 		</tr>
 	);
 };
@@ -96,12 +95,13 @@ const rowRenderer: any = (data: any) => {
 const cellRenderer: any = (props: any) => {
 	const backgroundStyle =
 		props.cell.value && props.cell.value < 0 ? { color: "red" } : undefined;
-    const selectedStyle = props.cell.seleted ? {color: "black"} : undefined;
-    console.log("Cell props")
-    console.log(props)
+    // console.log("Cell props")
+    // console.log(props)
+	// console.log("Data In custom cell renderer:")
+	// console.log(props);
 	return (
 		<td
-			style={selectedStyle}
+			style={backgroundStyle}
 			onMouseDown={props.onMouseDown}
 			onMouseOver={props.onMouseOver}
 			onDoubleClick={props.onDoubleClick}

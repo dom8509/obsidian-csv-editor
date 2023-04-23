@@ -283,7 +283,7 @@ export default class DataCell extends React.Component<
 
 		// console.log("Cell in renderer")
 		// console.log(cell)
-		console.log("ClassName: ", className)
+		// console.log("ClassName: ", className)
 		return (
 			<CellRenderer
 				row={row}

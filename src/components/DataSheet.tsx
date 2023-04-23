@@ -145,8 +145,8 @@ export default class DataSheet extends React.Component<
 	}
 
 	isSelectionControlled() {
-		console.log("In isSelectionControlled")
-		console.log(this.props)
+		// console.log("In isSelectionControlled")
+		// console.log(this.props)
 		return "selected" in this.props;
 	}
 

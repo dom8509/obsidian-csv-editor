@@ -1,4 +1,5 @@
 import { createSheet } from 'components';
+import ColumnHeader from 'components/ColumnHeader';
 import { CsvSheetColumnType, CsvSheetDataType } from 'components/CsvSheet';
 import { TextFileView, WorkspaceLeaf } from 'obsidian';
 import { parse, ParseResult } from 'papaparse';
@@ -13,7 +14,6 @@ const convertToKey = (str: string) => {
 export class CsvView extends TextFileView {
 	tableContainer: HTMLDivElement | null = null;
 	rootContainer: Root | null = null;
-	tableData: CsvSheetDataType = [];
 
 	public get extContentEl(): HTMLElement {
 		// @ts-ignore
@@ -68,52 +68,31 @@ export class CsvView extends TextFileView {
 			header: true,
 			dynamicTyping: true,
 		});
-		console.log(csvData)
 
+		const tableData: CsvSheetDataType = [];
+		const columnData: Array<CsvSheetColumnType> = [];
 		if (csvData.data.length > 0 && csvData.meta.fields) {
 			if (csvData.meta.fields) {
-				const dataRow: any = [];
-				dataRow.push({ value: "", readOnly: true });
 				csvData.meta.fields.forEach((column) => {
-					// console.log("Columns: ");
-					// console.log(column);
-					dataRow.push({ value: column, readOnly: true });
-
-					// tableColumns.push({ key: convertToKey(column), name: column, width: 20 });
+					columnData.push({ name: column });
 				});
-
-				this.tableData.push(dataRow);
-			} else {
-				console.log("");
 			}
 
-			// console.log("tableColumns");
-			// console.log(tableColumns);
-
 			csvData.data.forEach((row, idx) => {
-				// console.log("Row:");
-				// console.log(row);
 				const dataRow: any = [];
-				dataRow.push({ value: idx + 1, readOnly: true });
 				csvData.meta.fields?.forEach((column) => {
 					dataRow.push({ value: row[column] });
 				});
-				this.tableData.push(dataRow);
+				tableData.push(dataRow);
 			});
 		}
-		this.refresh();
-	}
 
-	clear(): void {
-		this.tableData = [];
-	}
-
-	refresh(): void {
-		console.log("In refresh")
-		console.log(this.tableData)
 		const sheet = createSheet({
-			data: this.tableData,
+			columns: columnData,
+			data: tableData,
 		});
 		this.rootContainer?.render(sheet);
 	}
+
+	clear(): void {}
 }

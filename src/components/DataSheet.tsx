@@ -2,7 +2,7 @@ import React from 'react';
 
 import Cell from './Cell';
 import { CellShapeType } from './CellShape';
-import { COLUMN_HEADER_IDX } from './ColumnHeader';
+import ColumnHeader, { COLUMN_HEADER_IDX } from './ColumnHeader';
 import DataCell from './DataCell';
 import DataEditor from './DataEditor';
 import {
@@ -16,8 +16,8 @@ import ValueViewer from './ValueViewer';
 type FunctionType = (...args: any[]) => any;
 type OverflowType = "wrap" | "nowrap" | "clip";
 type SelectedCellType = {
-	i: number;
-	j: number;
+	i: number; // Row index
+	j: number; // Colum index
 };
 type SelectedRangeType = {
 	start: SelectedCellType;
@@ -26,6 +26,7 @@ type SelectedRangeType = {
 
 export interface DataSheetProps {
 	data: Array<Array<any>>;
+	columns?: Array<any>;
 	className?: string;
 	disablePageClick?: boolean;
 	overflow?: OverflowType;
@@ -103,6 +104,7 @@ export default class DataSheet extends React.Component<
 		this.handleCut = this.handleCut.bind(this);
 		this.handleCopy = this.handleCopy.bind(this);
 		this.handlePaste = this.handlePaste.bind(this);
+		this.onColumnHeaderClick = this.onColumnHeaderClick.bind(this);
 		this.onRowHeaderClick = this.onRowHeaderClick.bind(this);
 		this.pageClick = this.pageClick.bind(this);
 		this.onChange = this.onChange.bind(this);
@@ -202,15 +204,39 @@ export default class DataSheet extends React.Component<
 		}
 	}
 
+	onColumnHeaderClick(i: number, j: number, e: MouseEvent) {
+		console.log("onColumnHeaderClick");
+		console.log(this.props.data);
+		console.log(this.props.data.length);
+		const endOfColumnIdx = this.props.data.length;
+		console.log("i = ", i);
+		console.log("j = ", j);
+		console.log("endOfColumnIdx = ", endOfColumnIdx)
+		console.log(this.state)
+		this._setState({
+			selecting: true,
+			start: { i: 0, j },
+			end: { i: endOfColumnIdx, j },
+			editing: undefined,
+			forceEdit: false,
+		});
+		console.log(this.state)
+
+		// Cut, copy and paste event handlers
+		document.addEventListener("cut", this.handleCut);
+		document.addEventListener("copy", this.handleCopy);
+		document.addEventListener("paste", this.handlePaste);
+	}
+
 	onRowHeaderClick(i: number, j: number, e: MouseEvent) {
 		const endOfLineIdx =
 			this.props.data.length > 0 ? this.props.data[0].length : 0;
 
 		this._setState({
 			selecting: false,
-			start: { i, j: 0 },
-			end: { i, j: endOfLineIdx },
-			editing: true,
+			start: { i: i, j: 0 },
+			end: { i: i, j: endOfLineIdx },
+			editing: undefined,
 			forceEdit: false,
 		});
 
@@ -703,9 +729,9 @@ export default class DataSheet extends React.Component<
 	}
 
 	onDoubleClick(i: number, j: number) {
-		console.log("in onDoubleClick")
+		console.log("in onDoubleClick");
 		const cell = this.props.data[i][j];
-		console.log("cell: ")
+		console.log("cell: ");
 		console.log(cell);
 		if (!cell.readOnly) {
 			this._setState({
@@ -843,9 +869,11 @@ export default class DataSheet extends React.Component<
 			className,
 			overflow,
 			data,
+			columns,
 			keyFn,
 		} = this.props;
 		const { forceEdit } = this.state;
+
 		return (
 			<span
 				ref={(r) => {
@@ -863,6 +891,48 @@ export default class DataSheet extends React.Component<
 						.filter((a) => a)
 						.join(" ")}
 				>
+					<th className="cell read-only" />
+					{columns &&
+						columns.map((col, j) => {
+							const vertSeperator: CellShapeType = {
+								className: "vert-separator",
+							};
+							return (
+								<>
+									<DataCell
+										key={`0-${j}-vert-sep`}
+										row={0}
+										col={j}
+										cell={vertSeperator}
+										forceEdit={forceEdit}
+										onMouseDown={this.onMouseDown}
+										onMouseOver={this.onMouseOver}
+										onDoubleClick={() => {}}
+										onContextMenu={this.onContextMenu}
+										onChange={this.onChange}
+										onRevert={this.onRevert}
+										onNavigate={
+											this.handleKeyboardCellMovement
+										}
+										onKey={this.handleKey}
+										selected={false}
+										editing={false}
+										clearing={false}
+										attributesRenderer={() => {}}
+										cellRenderer={cellRenderer}
+										valueRenderer={valueRenderer}
+										dataRenderer={dataRenderer}
+										valueViewer={valueViewer}
+										dataEditor={dataEditor}
+									/>
+									<ColumnHeader
+										column={j}
+										name={col.name}
+										onMouseDown={this.onColumnHeaderClick}
+									></ColumnHeader>
+								</>
+							);
+						})}
 					{data.map((row, i) => {
 						const vertSeperator: CellShapeType = {
 							className: "vert-separator",

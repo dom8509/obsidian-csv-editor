@@ -4,10 +4,11 @@ import { CellShapeType } from './CellShape';
 
 type FunctionType = (...args: any[]) => any;
 
-export const COLUMN_HEADER_IDX = 0;
+export const COLUMN_HEADER_IDX = -1;
 
 export interface ColumnHeaderProps {
-	row: number;
+	column: number;
+	name: string;
 	selected?: boolean;
 	attributesRenderer?: FunctionType;
 	onMouseDown: FunctionType;
@@ -32,19 +33,19 @@ export default class ColumnHeader extends React.Component<ColumnHeaderProps> {
 
 	handleMouseDown(e: MouseEvent) {
 		console.log(e)
-		const { row, onMouseDown } = this.props;
-		onMouseDown(row, -1, e);
+		const { column, onMouseDown } = this.props;
+		onMouseDown(-1, column, e);
 	}
 
 	render() {
-		const { row, selected } = this.props;
+		const { column, name, selected } = this.props;
 
 		const className = [
 			"cell",
 			selected && "selected",
 			"read-only",
-			"row-header",
-			`{row}-idx`,
+			"column-header",
+			`{column}-idx`,
 		]
 			.filter((a) => a)
 			.join(" ");
@@ -62,7 +63,7 @@ export default class ColumnHeader extends React.Component<ColumnHeaderProps> {
 				// style={style}
 				// {...attributes}
 			>
-				{row + 1}
+				{name}
 			</td>
 		);
 	}

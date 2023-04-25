@@ -6,6 +6,8 @@ import { CellShapeType } from './CellShape';
 import DataSheet from './DataSheet';
 import { ValueViewerProps } from './ValueViewer';
 
+type FunctionType = (...args: any[]) => any;
+
 export interface GridElement extends CellShapeType {
 	value: number | null;
 }
@@ -19,6 +21,7 @@ export type CsvSheetColumnType = {
 export interface CsvSheetProps {
 	columns?: Array<CsvSheetColumnType>;
 	data: CsvSheetDataType;
+	onDataChanged?: FunctionType;
 }
 
 interface CsvSheetState {
@@ -62,7 +65,7 @@ export class CsvSheet extends React.Component<CsvSheetProps, CsvSheetState> {
 					// console.log("In valueRenderer");
 					return cell.value;
 				}}
-                onSelect={(cell) => console.log("selected")}
+				onSelect={(cell) => console.log("selected")}
 				onCellsChanged={(changes) => {
 					console.log("In onCellsChanged");
 					const grid = this.state.grid.map((row) => [...row]);
@@ -70,6 +73,8 @@ export class CsvSheet extends React.Component<CsvSheetProps, CsvSheetState> {
 						grid[row][col] = { ...grid[row][col], value };
 					});
 					this.setState({ grid });
+					this.props.onDataChanged &&
+						this.props.onDataChanged(changes);
 				}}
 				cellRenderer={cellRenderer}
 			/>

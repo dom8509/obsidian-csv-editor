@@ -2,14 +2,14 @@ import React from 'react';
 
 import Cell from './Cell';
 import { CellShapeType } from './CellShape';
-import ColumnHeader, { COLUMN_HEADER_IDX } from './ColumnHeader';
+import ColumnHeader from './ColumnHeader';
 import DataCell from './DataCell';
 import DataEditor from './DataEditor';
 import {
     BACKSPACE_KEY, DELETE_KEY, DOWN_KEY, ENTER_KEY, ESCAPE_KEY, LEFT_KEY, RIGHT_KEY, TAB_KEY, UP_KEY
 } from './keys';
 import Row from './Row';
-import RowHeader, { ROW_HEADER_IDX } from './RowHeader';
+import RowHeader from './RowHeader';
 import Sheet from './Sheet';
 import ValueViewer from './ValueViewer';
 
@@ -211,8 +211,8 @@ export default class DataSheet extends React.Component<
 		const endOfColumnIdx = this.props.data.length;
 		console.log("i = ", i);
 		console.log("j = ", j);
-		console.log("endOfColumnIdx = ", endOfColumnIdx)
-		console.log(this.state)
+		console.log("endOfColumnIdx = ", endOfColumnIdx);
+		console.log(this.state);
 		this._setState({
 			selecting: true,
 			start: { i: 0, j },
@@ -220,7 +220,7 @@ export default class DataSheet extends React.Component<
 			editing: undefined,
 			forceEdit: false,
 		});
-		console.log(this.state)
+		console.log(this.state);
 
 		// Cut, copy and paste event handlers
 		document.addEventListener("cut", this.handleCut);
@@ -891,48 +891,53 @@ export default class DataSheet extends React.Component<
 						.filter((a) => a)
 						.join(" ")}
 				>
-					<th className="cell read-only" />
-					{columns &&
-						columns.map((col, j) => {
-							const vertSeperator: CellShapeType = {
-								className: "vert-separator",
-							};
-							return (
-								<>
-									<DataCell
-										key={`0-${j}-vert-sep`}
-										row={0}
-										col={j}
-										cell={vertSeperator}
-										forceEdit={forceEdit}
-										onMouseDown={this.onMouseDown}
-										onMouseOver={this.onMouseOver}
-										onDoubleClick={() => {}}
-										onContextMenu={this.onContextMenu}
-										onChange={this.onChange}
-										onRevert={this.onRevert}
-										onNavigate={
-											this.handleKeyboardCellMovement
-										}
-										onKey={this.handleKey}
-										selected={false}
-										editing={false}
-										clearing={false}
-										attributesRenderer={() => {}}
-										cellRenderer={cellRenderer}
-										valueRenderer={valueRenderer}
-										dataRenderer={dataRenderer}
-										valueViewer={valueViewer}
-										dataEditor={dataEditor}
-									/>
-									<ColumnHeader
-										column={j}
-										name={col.name}
-										onMouseDown={this.onColumnHeaderClick}
-									></ColumnHeader>
-								</>
-							);
-						})}
+					<tr>
+						<th key="booble" className="cell read-only" />
+						{columns &&
+							columns.map((col, j) => {
+								const vertSeperator: CellShapeType = {
+									className: "vert-separator",
+								};
+								return (
+									<>
+										<DataCell
+											key={`0-${j}-vert-sep`}
+											row={0}
+											col={j}
+											cell={vertSeperator}
+											forceEdit={forceEdit}
+											onMouseDown={this.onMouseDown}
+											onMouseOver={this.onMouseOver}
+											onDoubleClick={() => {}}
+											onContextMenu={this.onContextMenu}
+											onChange={this.onChange}
+											onRevert={this.onRevert}
+											onNavigate={
+												this.handleKeyboardCellMovement
+											}
+											onKey={this.handleKey}
+											selected={false}
+											editing={false}
+											clearing={false}
+											attributesRenderer={() => {}}
+											cellRenderer={cellRenderer}
+											valueRenderer={valueRenderer}
+											dataRenderer={dataRenderer}
+											valueViewer={valueViewer}
+											dataEditor={dataEditor}
+										/>
+										<ColumnHeader
+											key={`col-${j}-header`}
+											column={j}
+											name={col.name}
+											onMouseDown={
+												this.onColumnHeaderClick
+											}
+										></ColumnHeader>
+									</>
+								);
+							})}
+					</tr>
 					{data.map((row, i) => {
 						const vertSeperator: CellShapeType = {
 							className: "vert-separator",
@@ -945,15 +950,12 @@ export default class DataSheet extends React.Component<
 								selected={this.isSelectedRow(i)}
 							>
 								<RowHeader
+									key={`row-${i}-header`}
 									row={i}
 									onMouseDown={this.onRowHeaderClick}
 								/>
 								{row.map((cell, j) => {
 									const isEditing = this.isEditing(i, j);
-									// console.log("in cell renderer");
-									// console.log(cell);
-									// console.log(j);
-									// console.log("end in cell renderer");
 									return (
 										<>
 											<DataCell

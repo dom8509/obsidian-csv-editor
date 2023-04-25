@@ -1,19 +1,15 @@
 import { createSheet } from 'components';
-import ColumnHeader from 'components/ColumnHeader';
 import { CsvSheetColumnType, CsvSheetDataType } from 'components/CsvSheet';
 import { TextFileView, WorkspaceLeaf } from 'obsidian';
-import { parse, ParseResult } from 'papaparse';
+import { parse, ParseResult, unparse } from 'papaparse';
 import { createRoot, Root } from 'react-dom/client';
 
 export const VIEW_TYPE_CSV = "csv-view";
 
-const convertToKey = (str: string) => {
-	return str.toLowerCase().split(" ").join("-");
-};
-
 export class CsvView extends TextFileView {
-	tableContainer: HTMLDivElement | null = null;
-	rootContainer: Root | null = null;
+	containerEl: HTMLElement;
+	// rootEl: Root;
+	csvData: ParseResult<Record<string, unknown>> | undefined;
 
 	public get extContentEl(): HTMLElement {
 		// @ts-ignore
@@ -23,12 +19,7 @@ export class CsvView extends TextFileView {
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
 
-		// this.tableContainer = document.createElement("div");
-		// this.tableContainer.classList.add("csv-table-wrapper");
-		// this.tableContainer.setAttribute("id", "werte.csv");
-		// this.extContentEl.appendChild(this.tableContainer);
-
-		// this.rootContainer = createRoot(this.tableContainer);
+		this.handleDataChanged = this.handleDataChanged.bind(this);
 	}
 
 	getViewType(): string {
@@ -41,21 +32,25 @@ export class CsvView extends TextFileView {
 
 	// is called BEFORE the TextView is rendered
 	async onOpen() {
-		this.tableContainer = document.createElement("div");
-		this.tableContainer.classList.add("csv-table-wrapper");
-		this.tableContainer.setAttribute("id", "werte.csv");
-		this.extContentEl.appendChild(this.tableContainer);
-
-		this.rootContainer = createRoot(this.tableContainer);
 	}
 
 	async onClose() {
-		// this.rootContainer?
+		this.contentEl.empty();
 	}
 
 	getViewData(): string {
-		console.log("Method getViewData not implemented.");
-		return this.data;
+		let viewData = "";
+		if (this.csvData) {
+			if (this.csvData.meta.fields) {
+				viewData = unparse({
+					fields: this.csvData.meta.fields,
+					data: this.csvData.data,
+				});
+			} else {
+				viewData = unparse(this.csvData.data);
+			}
+		}
+		return viewData;
 	}
 
 	// is called AFTER the TextView is rendered
@@ -64,35 +59,62 @@ export class CsvView extends TextFileView {
 			this.clear();
 		}
 
-		const csvData: ParseResult<Record<string, unknown>> = parse(data, {
+		const containerEl = this.contentEl.createEl("div");
+		containerEl.classList.add("csv-table-wrapper");
+		containerEl.setAttribute("id", this.file.basename);
+		const rootEl = createRoot(containerEl);		
+
+		this.csvData = parse(data, {
 			header: true,
 			dynamicTyping: true,
 		});
 
 		const tableData: CsvSheetDataType = [];
 		const columnData: Array<CsvSheetColumnType> = [];
-		if (csvData.data.length > 0 && csvData.meta.fields) {
-			if (csvData.meta.fields) {
-				csvData.meta.fields.forEach((column) => {
+		if (this.csvData.data.length > 0 && this.csvData.meta.fields) {
+			if (this.csvData.meta.fields) {
+				this.csvData.meta.fields.forEach((column) => {
 					columnData.push({ name: column });
 				});
 			}
 
-			csvData.data.forEach((row, idx) => {
+			this.csvData.data.forEach((row) => {
 				const dataRow: any = [];
-				csvData.meta.fields?.forEach((column) => {
+				this.csvData?.meta.fields?.forEach((column) => {
 					dataRow.push({ value: row[column] });
 				});
 				tableData.push(dataRow);
 			});
 		}
-
+		
 		const sheet = createSheet({
 			columns: columnData,
 			data: tableData,
+			onDataChanged: this.handleDataChanged,
 		});
-		this.rootContainer?.render(sheet);
+
+		rootEl.render(sheet);
 	}
 
-	clear(): void {}
+	clear(): void {
+		this.contentEl.empty();
+		this.csvData = undefined;
+	}
+
+	handleDataChanged(changes: Array<any>) {
+		console.log("In handleDataChanges");
+		if (this.csvData?.meta.fields) {
+			for (const change of changes) {
+				// determine which column has changed
+				const colName = this.csvData?.meta.fields[change.col];
+				console.log(
+					"old value: ",
+					this.csvData.data[change.row][colName]
+				);
+				console.log("new value: ", change.value);
+				this.csvData.data[change.row][colName] = change.value;
+			}
+			this.requestSave();
+		}
+	}
 }

@@ -13,7 +13,13 @@ span.data-grid-container:focus {
   transition: background-color 0ms ease;
 }
 
-.data-grid-container .data-grid .cell:not(.vert-separator) {
+.data-grid-container .data-grid .column-header,
+.data-grid-container .data-grid .row-header {
+  font-weight: bold;
+  text-align: center;
+}
+
+.data-grid-container .data-grid .cell:not(.column-separator):not(.row-separator):not(.separator) {
   height: 17px;
   user-select: none;
   -moz-user-select: none;
@@ -21,7 +27,7 @@ span.data-grid-container:focus {
   -ms-user-select: none;
   cursor: cell;
   /* background-color: white; */
-  background-color: unset;
+  /* background-color: unset; */
   /* color: black; */
   transition: background-color 500ms ease;
   vertical-align: middle;
@@ -38,21 +44,28 @@ span.data-grid-container:focus {
   color: black;
 }
 
-.data-grid-container .data-grid .cell.vert-separator {
-  height: 17px;
+.data-grid-container .data-grid .cell.column-separator {
+  height: 1px;
+  width: 1px;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
   cursor: col-resize;
-  /* background-color: white; */
   background-color: whitesmoke;
-  /* color: black; */
   transition: background-color 500ms ease;
-  vertical-align: middle;
-  text-align: right;
+}
+
+.data-grid-container .data-grid .cell.row-separator {
+  height: 1px;
   width: 1px;
-  /* border: 1px solid #ddd; */
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  cursor: row-resize;
+  background-color: whitesmoke;
+  transition: background-color 500ms ease;
 }
 
 .data-grid-container .data-grid .cell.read-only {

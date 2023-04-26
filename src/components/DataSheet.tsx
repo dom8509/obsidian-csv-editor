@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import Cell from './Cell';
 import { CellShapeType } from './CellShape';
 import ColumnHeader from './ColumnHeader';
+import ColumnSeparator from './ColumnSeparator';
 import DataCell from './DataCell';
 import DataEditor from './DataEditor';
 import {
@@ -10,6 +11,7 @@ import {
 } from './keys';
 import Row from './Row';
 import RowHeader from './RowHeader';
+import RowSeparator from './RowSeparator';
 import Sheet from './Sheet';
 import ValueViewer from './ValueViewer';
 
@@ -895,37 +897,10 @@ export default class DataSheet extends React.Component<
 						<th key="booble" className="cell read-only" />
 						{columns &&
 							columns.map((col, j) => {
-								const vertSeperator: CellShapeType = {
-									className: "vert-separator",
-								};
 								return (
-									<React.Fragment key={`col-${j}-header-block`}>
-										<DataCell
-											key={`col-${j}-header-vert-sep`}
-											row={0}
-											col={j}
-											cell={vertSeperator}
-											forceEdit={forceEdit}
-											onMouseDown={this.onMouseDown}
-											onMouseOver={this.onMouseOver}
-											onDoubleClick={() => {}}
-											onContextMenu={this.onContextMenu}
-											onChange={this.onChange}
-											onRevert={this.onRevert}
-											onNavigate={
-												this.handleKeyboardCellMovement
-											}
-											onKey={this.handleKey}
-											selected={false}
-											editing={false}
-											clearing={false}
-											attributesRenderer={() => {}}
-											cellRenderer={cellRenderer}
-											valueRenderer={valueRenderer}
-											dataRenderer={dataRenderer}
-											valueViewer={valueViewer}
-											dataEditor={dataEditor}
-										/>
+									<React.Fragment
+										key={`col-${j}-header-block`}
+									>
 										<ColumnHeader
 											key={`col-${j}-header-value`}
 											column={j}
@@ -933,104 +908,137 @@ export default class DataSheet extends React.Component<
 											onMouseDown={
 												this.onColumnHeaderClick
 											}
-										></ColumnHeader>
+										/>
+										<ColumnSeparator
+											row={0}
+											col={j}
+											key={`col-${j}-header-vert-sep`}
+											onMouseDown={this.onMouseDown}
+											onDoubleClick={() => {}}
+											onContextMenu={this.onContextMenu}
+										/>
 									</React.Fragment>
 								);
 							})}
 					</tr>
 					{data.map((row, i) => {
-						const vertSeperator: CellShapeType = {
-							className: "vert-separator",
-						};
 						return (
-							<RowRenderer
-								key={keyFn ? keyFn(i) : i}
-								row={i}
-								cells={row}
-								selected={this.isSelectedRow(i)}
-							>
-								<RowHeader
-									key={`row-${i}-header`}
+							<React.Fragment key={`row-${i}-horz-sep-block`}>
+								<RowRenderer
+									key={keyFn ? keyFn(i) : i}
 									row={i}
-									onMouseDown={this.onRowHeaderClick}
-								/>
-								{row.map((cell, j) => {
-									const isEditing = this.isEditing(i, j);
-									return (
-										<React.Fragment key={`${i}-${j}-block`}>
-											<DataCell
-												key={`${i}-${j}-vert-sep`}
-												row={i}
-												col={j}
-												cell={vertSeperator}
-												forceEdit={forceEdit}
-												onMouseDown={this.onMouseDown}
-												onMouseOver={this.onMouseOver}
-												onDoubleClick={() => {}}
-												onContextMenu={
-													this.onContextMenu
-												}
-												onChange={this.onChange}
-												onRevert={this.onRevert}
-												onNavigate={
-													this
-														.handleKeyboardCellMovement
-												}
-												onKey={this.handleKey}
-												selected={false}
-												editing={false}
-												clearing={false}
-												attributesRenderer={() => {}}
-												cellRenderer={cellRenderer}
-												valueRenderer={valueRenderer}
-												dataRenderer={dataRenderer}
-												valueViewer={valueViewer}
-												dataEditor={dataEditor}
-											/>
-											<DataCell
-												key={
-													cell.key
-														? cell.key
-														: `${i}-${j}-value`
-												}
-												row={i}
-												col={j}
-												cell={cell}
-												forceEdit={forceEdit}
-												onMouseDown={this.onMouseDown}
-												onMouseOver={this.onMouseOver}
-												onDoubleClick={
-													this.onDoubleClick
-												}
-												onContextMenu={
-													this.onContextMenu
-												}
-												onChange={this.onChange}
-												onRevert={this.onRevert}
-												onNavigate={
-													this
-														.handleKeyboardCellMovement
-												}
-												onKey={this.handleKey}
-												selected={this.isSelected(i, j)}
-												editing={isEditing}
-												clearing={this.isClearing(i, j)}
-												attributesRenderer={
-													attributesRenderer
-												}
-												cellRenderer={cellRenderer}
-												valueRenderer={valueRenderer}
-												dataRenderer={dataRenderer}
-												valueViewer={valueViewer}
-												dataEditor={dataEditor}
-												{...(isEditing
-													? { forceEdit }
-													: {})}
-											/>
-										</React.Fragment>
-									);
-								})}
-							</RowRenderer>
+									cells={row}
+									selected={this.isSelectedRow(i)}
+								>
+									<RowHeader
+										key={`row-${i}-header`}
+										row={i}
+										onMouseDown={this.onRowHeaderClick}
+									/>
+									{row.map((cell, j) => {
+										const isEditing = this.isEditing(i, j);
+										return (
+											<React.Fragment
+												key={`${i}-${j}-block`}
+											>
+												<DataCell
+													key={
+														cell.key
+															? cell.key
+															: `${i}-${j}-value`
+													}
+													row={i}
+													col={j}
+													cell={cell}
+													forceEdit={forceEdit}
+													onMouseDown={
+														this.onMouseDown
+													}
+													onMouseOver={
+														this.onMouseOver
+													}
+													onDoubleClick={
+														this.onDoubleClick
+													}
+													onContextMenu={
+														this.onContextMenu
+													}
+													onChange={this.onChange}
+													onRevert={this.onRevert}
+													onNavigate={
+														this
+															.handleKeyboardCellMovement
+													}
+													onKey={this.handleKey}
+													selected={this.isSelected(
+														i,
+														j
+													)}
+													editing={isEditing}
+													clearing={this.isClearing(
+														i,
+														j
+													)}
+													attributesRenderer={
+														attributesRenderer
+													}
+													cellRenderer={cellRenderer}
+													valueRenderer={
+														valueRenderer
+													}
+													dataRenderer={dataRenderer}
+													valueViewer={valueViewer}
+													dataEditor={dataEditor}
+													{...(isEditing
+														? { forceEdit }
+														: {})}
+												/>
+												<ColumnSeparator
+													row={0}
+													col={j}
+													key={`${i}-${j}-vert-sep`}
+													onMouseDown={
+														this.onMouseDown
+													}
+													onDoubleClick={() => {}}
+													onContextMenu={
+														this.onContextMenu
+													}
+												/>
+											</React.Fragment>
+										);
+									})}
+								</RowRenderer>
+								<RowRenderer
+									key={keyFn ? keyFn(i) : i}
+									row={i}
+									cells={row}
+									selected={this.isSelectedRow(i)}
+								>
+									<td className="cell read-only separator" />
+									{row.map((cell, j) => {
+										return (
+											<React.Fragment
+												key={`${i}-${j}-block`}
+											>
+												<RowSeparator
+													row={i}
+													col={j}
+													key={`${i}-${j}-horz-vert-sep`}
+													onMouseDown={
+														this.onMouseDown
+													}
+													onDoubleClick={() => {}}
+													onContextMenu={
+														this.onContextMenu
+													}
+												/>
+												<td className="cell read-only separator" />
+											</React.Fragment>
+										);
+									})}
+								</RowRenderer>
+							</React.Fragment>
 						);
 					})}
 				</SheetRenderer>

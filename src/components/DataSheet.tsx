@@ -899,9 +899,9 @@ export default class DataSheet extends React.Component<
 									className: "vert-separator",
 								};
 								return (
-									<>
+									<React.Fragment key={`col-${j}-header-block`}>
 										<DataCell
-											key={`0-${j}-vert-sep`}
+											key={`col-${j}-header-vert-sep`}
 											row={0}
 											col={j}
 											cell={vertSeperator}
@@ -927,14 +927,14 @@ export default class DataSheet extends React.Component<
 											dataEditor={dataEditor}
 										/>
 										<ColumnHeader
-											key={`col-${j}-header`}
+											key={`col-${j}-header-value`}
 											column={j}
 											name={col.name}
 											onMouseDown={
 												this.onColumnHeaderClick
 											}
 										></ColumnHeader>
-									</>
+									</React.Fragment>
 								);
 							})}
 					</tr>
@@ -957,7 +957,7 @@ export default class DataSheet extends React.Component<
 								{row.map((cell, j) => {
 									const isEditing = this.isEditing(i, j);
 									return (
-										<>
+										<React.Fragment key={`${i}-${j}-block`}>
 											<DataCell
 												key={`${i}-${j}-vert-sep`}
 												row={i}
@@ -991,7 +991,7 @@ export default class DataSheet extends React.Component<
 												key={
 													cell.key
 														? cell.key
-														: `${i}-${j}`
+														: `${i}-${j}-value`
 												}
 												row={i}
 												col={j}
@@ -1027,7 +1027,7 @@ export default class DataSheet extends React.Component<
 													? { forceEdit }
 													: {})}
 											/>
-										</>
+										</React.Fragment>
 									);
 								})}
 							</RowRenderer>

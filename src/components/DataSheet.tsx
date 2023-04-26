@@ -57,6 +57,8 @@ interface DataSheetState {
 	start?: SelectedCellType;
 	end?: SelectedCellType;
 	selecting: boolean; // indicates if click and hold is active
+	selectingColumn: boolean;
+	selectingRow: boolean;
 	forceEdit: boolean;
 	editing?: SelectedCellType;
 	clear?: SelectedCellType;
@@ -106,8 +108,12 @@ export default class DataSheet extends React.Component<
 		this.handleCut = this.handleCut.bind(this);
 		this.handleCopy = this.handleCopy.bind(this);
 		this.handlePaste = this.handlePaste.bind(this);
-		this.onColumnHeaderClick = this.onColumnHeaderClick.bind(this);
-		this.onRowHeaderClick = this.onRowHeaderClick.bind(this);
+		this.onMouseDownColumnHeader = this.onMouseDownColumnHeader.bind(this);
+		this.onMouseOverColumnHeader = this.onMouseOverColumnHeader.bind(this);
+		this.onMouseUpColumnHeader = this.onMouseUpColumnHeader.bind(this);
+		this.onMouseDownRowHeader = this.onMouseDownRowHeader.bind(this);
+		this.onMouseOverRowHeader = this.onMouseOverRowHeader.bind(this);
+		this.onMouseUpRowHeader = this.onMouseUpRowHeader.bind(this);
 		this.pageClick = this.pageClick.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.onRevert = this.onRevert.bind(this);
@@ -120,7 +126,11 @@ export default class DataSheet extends React.Component<
 			this.handleKeyboardCellMovement.bind(this);
 
 		this.defaultState = {
+			start: undefined,
+			end: undefined,
 			selecting: false,
+			selectingColumn: false,
+			selectingRow: false,
 			forceEdit: false,
 		};
 
@@ -153,8 +163,6 @@ export default class DataSheet extends React.Component<
 	}
 
 	isSelectionControlled() {
-		// console.log("In isSelectionControlled")
-		// console.log(this.props)
 		return "selected" in this.props;
 	}
 
@@ -170,7 +178,6 @@ export default class DataSheet extends React.Component<
 	}
 
 	_setState(state: DataSheetState) {
-		console.log("In setState");
 		const { editModeChanged } = this.props;
 		if (editModeChanged && state.editing) {
 			const wasEditing = !isEmpty(this.state.editing);
@@ -206,23 +213,20 @@ export default class DataSheet extends React.Component<
 		}
 	}
 
-	onColumnHeaderClick(i: number, j: number, e: MouseEvent) {
-		console.log("onColumnHeaderClick");
-		console.log(this.props.data);
-		console.log(this.props.data.length);
+	onMouseDownColumnHeader(i: number, j: number, e: MouseEvent) {
 		const endOfColumnIdx = this.props.data.length;
-		console.log("i = ", i);
-		console.log("j = ", j);
-		console.log("endOfColumnIdx = ", endOfColumnIdx);
-		console.log(this.state);
 		this._setState({
-			selecting: true,
+			selectingColumn: true,
 			start: { i: 0, j },
 			end: { i: endOfColumnIdx, j },
 			editing: undefined,
 			forceEdit: false,
 		});
-		console.log(this.state);
+
+		// Keep listening to mouse if user releases the mouse (dragging outside)
+		document.addEventListener("mouseup", this.onMouseUpColumnHeader);
+		// Listen for any outside mouse clicks
+		document.addEventListener("mousedown", this.pageClick);
 
 		// Cut, copy and paste event handlers
 		document.addEventListener("cut", this.handleCut);
@@ -230,28 +234,59 @@ export default class DataSheet extends React.Component<
 		document.addEventListener("paste", this.handlePaste);
 	}
 
-	onRowHeaderClick(i: number, j: number, e: MouseEvent) {
+	onMouseOverColumnHeader(i: number, j: number) {
+		if (this.state.selectingColumn) {
+			this._setState({ end: { i: this.props.data.length, j } });
+		}
+	}
+
+	onMouseUpColumnHeader() {
+		this._setState({ selectingColumn: false });
+		document.removeEventListener("mouseup", this.onMouseUpColumnHeader);
+	}
+
+	onMouseDownRowHeader(i: number, j: number, e: MouseEvent) {
 		const endOfLineIdx =
 			this.props.data.length > 0 ? this.props.data[0].length : 0;
 
 		this._setState({
-			selecting: false,
+			selectingRow: true,
 			start: { i: i, j: 0 },
 			end: { i: i, j: endOfLineIdx },
 			editing: undefined,
 			forceEdit: false,
 		});
 
+		// Keep listening to mouse if user releases the mouse (dragging outside)
+		document.addEventListener("mouseup", this.onMouseUpRowHeader);
+		// Listen for any outside mouse clicks
+		document.addEventListener("mousedown", this.pageClick);
+
 		// Cut, copy and paste event handlers
 		document.addEventListener("cut", this.handleCut);
 		document.addEventListener("copy", this.handleCopy);
 		document.addEventListener("paste", this.handlePaste);
 	}
 
+	onMouseOverRowHeader(i: number, j: number) {
+		if (this.state.selectingRow) {
+			const endOfLineIdx =
+				this.props.data.length > 0 ? this.props.data[0].length : 0;
+			this._setState({ end: { i, j: endOfLineIdx } });
+		}
+	}
+
+	onMouseUpRowHeader() {
+		this._setState({ selectingRow: false });
+		document.removeEventListener("mouseup", this.onMouseUpRowHeader);
+	}
+
 	pageClick(e: MouseEvent) {
+		console.log("In pageClick");
 		if (this.props.disablePageClick) return;
 		const element = this.dgDom;
 		if (!element.contains(e.target as Node)) {
+			console.log("yes");
 			this.setState(this.defaultState);
 			this.removeAllListeners();
 		}
@@ -819,7 +854,6 @@ export default class DataSheet extends React.Component<
 	}
 
 	isSelectedRow(rowIndex: number) {
-		console.log("In isSelectedRow");
 		const { start, end } = this.getState();
 		if (start && end) {
 			const startY = start.i;
@@ -893,6 +927,7 @@ export default class DataSheet extends React.Component<
 						.filter((a) => a)
 						.join(" ")}
 				>
+					{/* header row */}
 					<tr>
 						<th key="booble" className="cell read-only" />
 						{columns &&
@@ -906,7 +941,10 @@ export default class DataSheet extends React.Component<
 											column={j}
 											name={col.name}
 											onMouseDown={
-												this.onColumnHeaderClick
+												this.onMouseDownColumnHeader
+											}
+											onMouseOver={
+												this.onMouseOverColumnHeader
 											}
 										/>
 										<ColumnSeparator
@@ -921,6 +959,7 @@ export default class DataSheet extends React.Component<
 								);
 							})}
 					</tr>
+					{/* content rows */}
 					{data.map((row, i) => {
 						return (
 							<React.Fragment key={`row-${i}-horz-sep-block`}>
@@ -933,7 +972,8 @@ export default class DataSheet extends React.Component<
 									<RowHeader
 										key={`row-${i}-header`}
 										row={i}
-										onMouseDown={this.onRowHeaderClick}
+										onMouseDown={this.onMouseDownRowHeader}
+										onMouseOver={this.onMouseOverRowHeader}
 									/>
 									{row.map((cell, j) => {
 										const isEditing = this.isEditing(i, j);

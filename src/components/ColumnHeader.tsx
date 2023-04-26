@@ -1,6 +1,4 @@
-import React, { MouseEventHandler } from 'react';
-
-import { CellShapeType } from './CellShape';
+import React from 'react';
 
 type FunctionType = (...args: any[]) => any;
 
@@ -12,11 +10,7 @@ export interface ColumnHeaderProps {
 	selected?: boolean;
 	attributesRenderer?: FunctionType;
 	onMouseDown: FunctionType;
-	// onMouseOver: FunctionType;
-	// onDoubleClick: FunctionType;
-	// onContextMenu: FunctionType;
-	// className?: string;
-	// style?: React.CSSProperties;
+	onMouseOver: FunctionType;
 }
 
 export default class ColumnHeader extends React.Component<ColumnHeaderProps> {
@@ -27,18 +21,23 @@ export default class ColumnHeader extends React.Component<ColumnHeaderProps> {
 
 	constructor(props: ColumnHeaderProps) {
 		super(props);
-		
+
 		this.handleMouseDown = this.handleMouseDown.bind(this);
+		this.handleMouseOver = this.handleMouseOver.bind(this);
 	}
 
 	handleMouseDown(e: MouseEvent) {
-		console.log(e)
 		const { column, onMouseDown } = this.props;
-		onMouseDown(-1, column, e);
+		onMouseDown(COLUMN_HEADER_IDX, column, e);
+	}
+
+	handleMouseOver(e: MouseEvent) {
+		const { column, onMouseOver } = this.props;
+		onMouseOver(COLUMN_HEADER_IDX, column, e);
 	}
 
 	render() {
-		const { column, name, selected } = this.props;
+		const { name, selected } = this.props;
 
 		const className = [
 			"cell",
@@ -54,14 +53,7 @@ export default class ColumnHeader extends React.Component<ColumnHeaderProps> {
 			<td
 				className={className}
 				onMouseDown={this.handleMouseDown}
-				// onMouseOver={onMouseOver}
-				// onDoubleClick={onDoubleClick}
-				// onTouchEnd={onDoubleClick}
-				// onContextMenu={onContextMenu}
-				// colSpan={colSpan}
-				// rowSpan={rowSpan}
-				// style={style}
-				// {...attributes}
+				onMouseOver={this.handleMouseOver}
 			>
 				{name}
 			</td>

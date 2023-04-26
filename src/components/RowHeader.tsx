@@ -1,6 +1,4 @@
-import React, { MouseEventHandler } from 'react';
-
-import { CellShapeType } from './CellShape';
+import React from 'react';
 
 type FunctionType = (...args: any[]) => any;
 
@@ -11,11 +9,7 @@ export interface RowHeaderProps {
 	selected?: boolean;
 	attributesRenderer?: FunctionType;
 	onMouseDown: FunctionType;
-	// onMouseOver: FunctionType;
-	// onDoubleClick: FunctionType;
-	// onContextMenu: FunctionType;
-	// className?: string;
-	// style?: React.CSSProperties;
+	onMouseOver: FunctionType;
 }
 
 export default class RowHeader extends React.Component<RowHeaderProps> {
@@ -26,14 +20,20 @@ export default class RowHeader extends React.Component<RowHeaderProps> {
 
 	constructor(props: RowHeaderProps) {
 		super(props);
-		
+
 		this.handleMouseDown = this.handleMouseDown.bind(this);
+		this.handleMouseOver = this.handleMouseOver.bind(this);
 	}
 
 	handleMouseDown(e: MouseEvent) {
-		console.log(e)
+		console.log(e);
 		const { row, onMouseDown } = this.props;
-		onMouseDown(row, -1, e);
+		onMouseDown(row, ROW_HEADER_IDX, e);
+	}
+
+	handleMouseOver(e: MouseEvent) {
+		const { row, onMouseOver } = this.props;
+		onMouseOver(row, ROW_HEADER_IDX, e);
 	}
 
 	render() {
@@ -53,14 +53,7 @@ export default class RowHeader extends React.Component<RowHeaderProps> {
 			<td
 				className={className}
 				onMouseDown={this.handleMouseDown}
-				// onMouseOver={onMouseOver}
-				// onDoubleClick={onDoubleClick}
-				// onTouchEnd={onDoubleClick}
-				// onContextMenu={onContextMenu}
-				// colSpan={colSpan}
-				// rowSpan={rowSpan}
-				// style={style}
-				// {...attributes}
+				onMouseOver={this.handleMouseOver}
 			>
 				{row + 1}
 			</td>

@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { addIcon, App, Notice, Plugin, ViewState, WorkspaceLeaf } from 'obsidian';
 import SampleSettingTab, { CsvTablePluginSettings } from 'settings';
 import { CsvView, VIEW_TYPE_CSV } from 'views/CsvView';
 
@@ -12,7 +12,7 @@ export default class CsvTablePlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.registerView(VIEW_TYPE_CSV, (leaf) => new CsvView(leaf));
+		this.registerView(VIEW_TYPE_CSV, (leaf) => new CsvView(leaf, this));
 		this.registerExtensions(["csv"], VIEW_TYPE_CSV);
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -31,5 +31,16 @@ export default class CsvTablePlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async setMarkdownView(leaf: WorkspaceLeaf, focus = true) {
+		await leaf.setViewState(
+			{
+				type: "markdown",
+				state: leaf.view.getState(),
+				popstate: true,
+			} as ViewState,
+			{ focus }
+		);
 	}
 }

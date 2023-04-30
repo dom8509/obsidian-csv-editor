@@ -1,8 +1,9 @@
 import { createSheet } from 'components';
 import { CsvSheetColumnType, CsvSheetDataType } from 'components/CsvSheet';
-import { TextFileView, WorkspaceLeaf } from 'obsidian';
+import CsvTablePlugin from 'main';
+import { Menu, Notice, TextFileView, WorkspaceLeaf } from 'obsidian';
 import { parse, ParseResult, unparse } from 'papaparse';
-import { createRoot, Root } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 export const VIEW_TYPE_CSV = "csv-view";
 
@@ -10,16 +11,21 @@ export class CsvView extends TextFileView {
 	containerEl: HTMLElement;
 	// rootEl: Root;
 	csvData: ParseResult<Record<string, unknown>> | undefined;
+	plugin: CsvTablePlugin;
 
 	public get extContentEl(): HTMLElement {
 		// @ts-ignore
 		return this.contentEl;
 	}
 
-	constructor(leaf: WorkspaceLeaf) {
+	constructor(leaf: WorkspaceLeaf, plugin: CsvTablePlugin) {
 		super(leaf);
 
+		this.plugin = plugin;
+		console.log(this.plugin);
+
 		this.handleDataChanged = this.handleDataChanged.bind(this);
+		this.handleContextMenu = this.handleContextMenu.bind(this);
 	}
 
 	getViewType(): string {
@@ -31,11 +37,20 @@ export class CsvView extends TextFileView {
 	}
 
 	// is called BEFORE the TextView is rendered
-	async onOpen() {
-	}
+	async onOpen() {}
 
 	async onClose() {
 		this.contentEl.empty();
+	}
+
+	// is called when the plugin is loaded or updated
+	async onload() {
+		// Open as markdown action
+		this.addAction(
+			"document",
+			"Open as Markdown",
+			this.markdownAction.bind(this)
+		);
 	}
 
 	getViewData(): string {
@@ -62,7 +77,7 @@ export class CsvView extends TextFileView {
 		const containerEl = this.contentEl.createEl("div");
 		containerEl.classList.add("csv-table-wrapper");
 		containerEl.setAttribute("id", this.file.basename);
-		const rootEl = createRoot(containerEl);		
+		const rootEl = createRoot(containerEl);
 
 		this.csvData = parse(data, {
 			header: true,
@@ -86,11 +101,12 @@ export class CsvView extends TextFileView {
 				tableData.push(dataRow);
 			});
 		}
-		
+
 		const sheet = createSheet({
 			columns: columnData,
 			data: tableData,
 			onDataChanged: this.handleDataChanged,
+			onContextMenu: this.handleContextMenu,
 		});
 
 		rootEl.render(sheet);
@@ -103,8 +119,25 @@ export class CsvView extends TextFileView {
 
 	handleDataChanged(changes: Array<any>) {
 		console.log("In handleDataChanges");
+		console.log(changes);
+		console.log(this.csvData?.data.length);
+		console.log(this.csvData?.data);
 		if (this.csvData?.meta.fields) {
 			for (const change of changes) {
+				console.log("csvData");
+				console.log(this.csvData);
+				if (change.row >= this.csvData.data.length) {
+					const newRow: Record<string, unknown> =
+						this.csvData.meta.fields
+							.map((fieldName) => ({ [fieldName]: null }))
+							.reduce((acc, val) => ({ ...acc, ...val }), {});
+					console.log("newRow");
+					console.log(newRow);
+
+					//@ts-ignore: Argument of type 'any[]' is not assignable to parameter of type 'Record<string, unknown>'.
+					this.csvData.data.push(newRow);
+					console.log(this.csvData);
+				}
 				// determine which column has changed
 				const colName = this.csvData?.meta.fields[change.col];
 				console.log(
@@ -116,5 +149,40 @@ export class CsvView extends TextFileView {
 			}
 			this.requestSave();
 		}
+	}
+
+	handleContextMenu(event: any, cell: any, i: number, j: number) {
+		console.log("in handleContextMenu");
+		console.log(event);
+		console.log(i);
+		console.log(j);
+
+		const menu = new Menu();
+
+		menu.addItem((item) =>
+			item
+				.setTitle("Copy")
+				.setIcon("documents")
+				.onClick(() => {
+					new Notice("Copied");
+				})
+		);
+
+		menu.addItem((item) =>
+			item
+				.setTitle("Paste")
+				.setIcon("paste")
+				.onClick(() => {
+					new Notice("Pasted");
+				})
+		);
+
+		menu.showAtMouseEvent(event);
+	}
+
+	markdownAction() {
+		// this.plugin.databaseFileModes[this.leaf.id || this.file.path] =
+		//     InputType.MARKDOWN;
+		this.plugin.setMarkdownView(this.leaf);
 	}
 }

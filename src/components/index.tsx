@@ -12,6 +12,7 @@ import ValueViewer from './ValueViewer';
 export { DataSheet, Sheet, Row, Cell, DataEditor, ValueViewer, renderValue, renderData };
 
 export function createSheet(props: CsvSheetProps) {
+	console.log(props)
 	return (
 		<React.StrictMode>
 			<CsvSheet {...props} />

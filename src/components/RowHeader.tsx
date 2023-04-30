@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { CellShapeType } from './CellShape';
+
 type FunctionType = (...args: any[]) => any;
 
 export const ROW_HEADER_IDX = -1;
@@ -10,6 +12,7 @@ export interface RowHeaderProps {
 	attributesRenderer?: FunctionType;
 	onMouseDown: FunctionType;
 	onMouseOver: FunctionType;
+	onContextMenu: FunctionType;
 }
 
 export default class RowHeader extends React.Component<RowHeaderProps> {
@@ -23,6 +26,7 @@ export default class RowHeader extends React.Component<RowHeaderProps> {
 
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 		this.handleMouseOver = this.handleMouseOver.bind(this);
+		this.handleContextMenu = this.handleContextMenu.bind(this);
 	}
 
 	handleMouseDown(e: MouseEvent) {
@@ -34,6 +38,11 @@ export default class RowHeader extends React.Component<RowHeaderProps> {
 	handleMouseOver(e: MouseEvent) {
 		const { row, onMouseOver } = this.props;
 		onMouseOver(row, ROW_HEADER_IDX, e);
+	}
+
+	handleContextMenu(e: MouseEvent) {
+		const { row, onContextMenu } = this.props;
+		onContextMenu(e, row, ROW_HEADER_IDX);
 	}
 
 	render() {
@@ -54,6 +63,7 @@ export default class RowHeader extends React.Component<RowHeaderProps> {
 				className={className}
 				onMouseDown={this.handleMouseDown}
 				onMouseOver={this.handleMouseOver}
+				onContextMenu={this.handleContextMenu}
 			>
 				{row + 1}
 			</td>

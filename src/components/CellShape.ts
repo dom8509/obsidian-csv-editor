@@ -17,6 +17,7 @@ viewer func  undefined A component used to render the cell's value when not bein
 type FunctionType = (...args: any[]) => any;
 
 export interface CellShapeType {
+	value: any;
 	readOnly?: boolean;
 	key?: string;
 	className?: string;

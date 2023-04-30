@@ -88,6 +88,7 @@ span.data-grid-container:focus {
 	width: calc(100% - 6px);
 	background: none;
 	display: block;
+	color:black;
 }
 
 .data-grid-container .data-grid .cell {

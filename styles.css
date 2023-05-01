@@ -14,9 +14,11 @@ span.data-grid-container:focus {
 }
 
 .data-grid-container .data-grid .column-header,
-.data-grid-container .data-grid .row-header {
-  font-weight: bold;
-  text-align: center;
+.data-grid-container .data-grid .row-header,
+.data-grid-container .data-grid .add-header-btn {
+  font-weight: bold !important;
+  text-align: center !important;
+  min-width: 30px !important;
 }
 
 .data-grid-container .data-grid .cell:not(.column-separator):not(.row-separator):not(.separator) {
@@ -126,4 +128,8 @@ span.data-grid-container:focus {
 .data-grid-container .data-grid .cell .data-editor {
   display: block;
   /* height: 100%; */
+}
+
+.data-grid-container .data-grid .add-header-btn {
+  cursor: default !important;
 }

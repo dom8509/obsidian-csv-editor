@@ -118,33 +118,22 @@ export class CsvView extends TextFileView {
 	}
 
 	handleDataChanged(changes: Array<any>) {
-		console.log("In handleDataChanges");
-		console.log(changes);
-		console.log(this.csvData?.data.length);
-		console.log(this.csvData?.data);
 		if (this.csvData?.meta.fields) {
 			for (const change of changes) {
-				console.log("csvData");
-				console.log(this.csvData);
 				if (change.row >= this.csvData.data.length) {
 					const newRow: Record<string, unknown> =
 						this.csvData.meta.fields
 							.map((fieldName) => ({ [fieldName]: null }))
 							.reduce((acc, val) => ({ ...acc, ...val }), {});
-					console.log("newRow");
-					console.log(newRow);
 
 					//@ts-ignore: Argument of type 'any[]' is not assignable to parameter of type 'Record<string, unknown>'.
 					this.csvData.data.push(newRow);
-					console.log(this.csvData);
+				} else if (change.col > this.csvData.meta.fields.length) {
+					this.csvData.meta.fields.push("Neue Spalte " + (this.csvData.meta.fields.length + 1));
 				}
+
 				// determine which column has changed
 				const colName = this.csvData?.meta.fields[change.col];
-				console.log(
-					"old value: ",
-					this.csvData.data[change.row][colName]
-				);
-				console.log("new value: ", change.value);
 				this.csvData.data[change.row][colName] = change.value;
 			}
 			this.requestSave();
@@ -152,11 +141,6 @@ export class CsvView extends TextFileView {
 	}
 
 	handleContextMenu(event: any, cell: any, i: number, j: number) {
-		console.log("in handleContextMenu");
-		console.log(event);
-		console.log(i);
-		console.log(j);
-
 		const menu = new Menu();
 
 		menu.addItem((item) =>

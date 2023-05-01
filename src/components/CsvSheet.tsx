@@ -52,8 +52,7 @@ const cellRenderer: any = (props: any) => {
 export class CsvSheet extends React.Component<CsvSheetProps, CsvSheetState> {
 	constructor(props: CsvSheetProps) {
 		super(props);
-		console.log("In CsvSheet Constructor")
-		console.log(props)
+
 		this.state = {
 			columns: this.props.columns,
 			grid: this.props.data,
@@ -73,61 +72,70 @@ export class CsvSheet extends React.Component<CsvSheetProps, CsvSheetState> {
 				}}
 				onSelect={(cell) => console.log("selected")}
 				onCellsChanged={(changes) => {
-					//TODO: grid needs to be resized
-					console.log("Navigation: entering onCellsChanged");
-					console.log(changes);
-
-					console.log("changes.row: ", changes.row);
-					console.log("Grid Length: ", this.state.grid.length);
-					// if (changes.row >= this.state.grid.length) {
-					// 	console.log("New row added to grid");
-					// 	console.log("Changed Grid size");
-					// } else if (
-					// 	this.state.grid.length > 0 &&
-					// 	changes.col >= this.state.grid[0].length
-					// ) {
-					// 	console.log("New column added to grid");
-					// }
-
 					const grid = this.state.grid.map((row) => [...row]);
 					changes.forEach(({ row, col, value }: ValueViewerProps) => {
-						console.log("change");
-						console.log(value);
-						if (row >= grid.length) {
-							console.log("New row added to grid");
-							console.log("Changed Grid size");
-							const newRow: CsvSheetRowType = Array(
-								grid[0].length
-							)
-								.fill(0)
-								.map((_, idx) => {
-									const value = {
-										row: row,
-										col: idx,
-										value: "",
-									};
-									return value;
-								});
-							grid.push(newRow);
-						} else if (grid.length > 0 && col >= grid[0].length) {
-							console.log("New column added to grid");
-						} else {
-							grid[row][col] = { ...grid[row][col], value };
-						}
+						grid[row][col] = { ...grid[row][col], value };
 					});
-					console.log("Navigation: updating grid");
+
 					this.setState({ grid });
-					console.log("Navigation: calling onDataChanged");
+
 					const { onDataChanged } = this.props;
 					if (onDataChanged) {
-						console.log("Navidation: onDataChanged is defined");
 						onDataChanged(changes);
-						console.log("Navidation: onDataChanged call returned");
 					}
-
-					console.log("Navigation: leaving onCellsChanged");
 				}}
 				onContextMenu={onContextMenu}
+				onRowAdded={() => {
+					const grid = this.state.grid.map((row) => [...row]);
+					const newRow: CsvSheetRowType = Array(grid[0].length)
+						.fill(0)
+						.map((_, idx) => {
+							const value = {
+								row: grid.length + 1,
+								col: idx,
+								value: "",
+							};
+							return value;
+						});
+					grid.push(newRow);
+
+					this.setState({ grid });
+
+					const { onDataChanged } = this.props;
+					if (onDataChanged) {
+						onDataChanged(newRow);
+					}
+				}}
+				onColumnAdded={() => {
+					const numColumns = this.state.grid[0].length;
+					const newColumnName = "Neue Spalte " + (numColumns + 1);
+					console.log(newColumnName)
+					const changes: any[] = [];
+					const grid = this.state.grid.map((row, idx) => {
+						const newColumn: any = {
+							row: idx,
+							col: numColumns + 1,
+							value: "",
+						};
+						changes.push(newColumn)
+						return [...row, newColumn];
+					});
+
+					const columns: Array<CsvSheetColumnType> =
+						this.state.columns?.map(
+							(column: CsvSheetColumnType) => ({ ...column })
+						);
+					const newcolumnName: CsvSheetColumnType = {
+						name: newColumnName,
+					};
+					columns.push(newcolumnName);
+					this.setState({ columns, grid });
+
+					const { onDataChanged } = this.props;
+					if (onDataChanged) {
+						onDataChanged(changes);
+					}
+				}}
 				cellRenderer={cellRenderer}
 				autoAddCells={true}
 			/>

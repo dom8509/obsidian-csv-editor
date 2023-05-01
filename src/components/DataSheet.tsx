@@ -1,7 +1,8 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
+import AddColumn from './AddColumn';
+import AddRow from './AddRow';
 import Cell from './Cell';
-import { CellShapeType } from './CellShape';
 import ColumnHeader, { COLUMN_HEADER_IDX } from './ColumnHeader';
 import ColumnSeparator from './ColumnSeparator';
 import DataCell from './DataCell';
@@ -13,7 +14,7 @@ import Row from './Row';
 import RowHeader, { ROW_HEADER_IDX } from './RowHeader';
 import RowSeparator from './RowSeparator';
 import Sheet from './Sheet';
-import ValueViewer, { ValueViewerProps } from './ValueViewer';
+import ValueViewer from './ValueViewer';
 
 type FunctionType = (...args: any[]) => any;
 type OverflowType = "wrap" | "nowrap" | "clip";
@@ -37,8 +38,9 @@ export interface DataSheetProps {
 	onCellsChanged?: FunctionType;
 	onContextMenu?: FunctionType;
 	onSelect?: FunctionType;
+	onRowAdded?: FunctionType;
+	onColumnAdded?: FunctionType;
 	isCellNavigable?: FunctionType;
-	autoAddCells?: boolean;
 	selected?: SelectedRangeType;
 	valueRenderer: FunctionType;
 	dataRenderer?: FunctionType;
@@ -116,6 +118,8 @@ export default class DataSheet extends React.Component<
 		this.onMouseDownRowHeader = this.onMouseDownRowHeader.bind(this);
 		this.onMouseOverRowHeader = this.onMouseOverRowHeader.bind(this);
 		this.onMouseUpRowHeader = this.onMouseUpRowHeader.bind(this);
+		this.onMouseDownAddRow = this.onMouseDownAddRow.bind(this);
+		this.onMouseDownAddColumn = this.onMouseDownAddColumn.bind(this);
 		this.pageClick = this.pageClick.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.onRevert = this.onRevert.bind(this);
@@ -281,6 +285,16 @@ export default class DataSheet extends React.Component<
 	onMouseUpRowHeader() {
 		this._setState({ selectingRow: false });
 		document.removeEventListener("mouseup", this.onMouseUpRowHeader);
+	}
+
+	onMouseDownAddRow() {
+		const { onRowAdded } = this.props;
+		onRowAdded && onRowAdded();
+	}
+
+	onMouseDownAddColumn() {
+		const { onColumnAdded } = this.props;
+		onColumnAdded && onColumnAdded();
 	}
 
 	pageClick(e: MouseEvent) {
@@ -643,7 +657,7 @@ export default class DataSheet extends React.Component<
 			i: location.i + offsets.i,
 			j: location.j + offsets.j,
 		});
-		let isCellDefined = ({ i, j }: SelectedCellType) =>
+		const isCellDefined = ({ i, j }: SelectedCellType) =>
 			data[i] && typeof data[i][j] !== "undefined";
 
 		let newLocation = advanceOffset(start);
@@ -660,38 +674,17 @@ export default class DataSheet extends React.Component<
 		}
 
 		if (!isCellDefined(newLocation)) {
-			console.log("Cell not defined");
 			if (jumpRow) {
 				if (offsets.j < 0) {
 					newLocation = previousRow(newLocation);
 				} else {
 					newLocation = nextRow(newLocation);
 				}
-			} else if (this.props.autoAddCells) {
-				console.log("Navigation: Adding new Cells");
-				console.log("offset:");
-				console.log(offsets);
-				console.log("newLocation:");
-				console.log(newLocation);
-				if (offsets.i === 1) {
-					const { onCellsChanged } = this.props;
-					onCellsChanged &&
-						onCellsChanged([
-							{
-								row: newLocation.i,
-								col: newLocation.j,
-								value: "",
-							},
-						]);
-				}
 			} else {
-				console.log("Navigation: returning null");
 				return null;
 			}
 		}
 
-		console.log("Navigation: mid of function");
-		
 		if (
 			isCellDefined(newLocation) &&
 			!isCellNavigable(
@@ -700,7 +693,6 @@ export default class DataSheet extends React.Component<
 				newLocation.j
 			)
 		) {
-			console.log("Navigation: cell is defined but not navigable");
 			return this.searchForNextSelectablePos(
 				isCellNavigable,
 				data,
@@ -709,10 +701,8 @@ export default class DataSheet extends React.Component<
 				jumpRow
 			);
 		} else if (isCellDefined(newLocation)) {
-			console.log("Navigation: cell is defined and navigable");
 			return newLocation;
 		} else {
-			console.log("Navigation: cell is not defined");
 			return null;
 		}
 	}
@@ -1007,7 +997,9 @@ export default class DataSheet extends React.Component<
 									</React.Fragment>
 								);
 							})}
+						<AddColumn onMouseDown={this.onMouseDownAddColumn} />
 					</tr>
+
 					{/* content rows */}
 					{data.map((row, i) => {
 						return (
@@ -1138,6 +1130,9 @@ export default class DataSheet extends React.Component<
 							</React.Fragment>
 						);
 					})}
+					<tr>
+						<AddRow onMouseDown={this.onMouseDownAddRow} />
+					</tr>
 				</SheetRenderer>
 			</span>
 		);

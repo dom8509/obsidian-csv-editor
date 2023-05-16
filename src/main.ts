@@ -1,4 +1,4 @@
-import { addIcon, App, Notice, Plugin, ViewState, WorkspaceLeaf } from 'obsidian';
+import { Plugin, ViewState, WorkspaceLeaf } from 'obsidian';
 import SampleSettingTab, { CsvTablePluginSettings } from 'settings';
 import { CsvView, VIEW_TYPE_CSV } from 'views/CsvView';
 

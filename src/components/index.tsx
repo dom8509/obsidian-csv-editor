@@ -1,7 +1,9 @@
+import TableProvider from 'context/TableContext';
 import React from 'react';
+import { TableState } from 'types/table';
 
 import Cell from './Cell';
-import { CsvSheet, CsvSheetProps } from './CsvSheet';
+import { CsvSheet } from './CsvSheet';
 import DataEditor from './DataEditor';
 import DataSheet from './DataSheet';
 import { renderData, renderValue } from './renderHelpers';
@@ -9,13 +11,26 @@ import Row from './Row';
 import Sheet from './Sheet';
 import ValueViewer from './ValueViewer';
 
-export { DataSheet, Sheet, Row, Cell, DataEditor, ValueViewer, renderValue, renderData };
+export {
+	DataSheet,
+	Sheet,
+	Row,
+	Cell,
+	DataEditor,
+	ValueViewer,
+	renderValue,
+	renderData,
+};
 
-export function createSheet(props: CsvSheetProps) {
-	console.log(props)
+export const createSheet = (data: TableState, onDataChangedCallback: any) => {
 	return (
 		<React.StrictMode>
-			<CsvSheet {...props} />
+			<TableProvider
+				onDataChanged={onDataChangedCallback}
+				initialState={data}
+			>
+				<DataSheet />
+			</TableProvider>
 		</React.StrictMode>
 	);
-}
+};

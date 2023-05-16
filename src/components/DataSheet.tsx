@@ -1,3 +1,6 @@
+import { useTableDispatch } from 'context/TableContext';
+import { addColumn } from 'data/column-state-operations';
+import { addRow } from 'data/row-state-operations';
 import React from 'react';
 
 import AddColumn from './AddColumn';
@@ -103,29 +106,36 @@ export default class DataSheet extends React.Component<
 		super(props);
 
 		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseOver = this.onMouseOver.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onDoubleClick = this.onDoubleClick.bind(this);
 		this.onContextMenu = this.onContextMenu.bind(this);
+
 		this.handleNavigate = this.handleNavigate.bind(this);
 		this.handleKey = this.handleKey.bind(this).bind(this);
 		this.handleCut = this.handleCut.bind(this);
 		this.handleCopy = this.handleCopy.bind(this);
 		this.handlePaste = this.handlePaste.bind(this);
-		this.onMouseDownColumnHeader = this.onMouseDownColumnHeader.bind(this);
-		this.onMouseOverColumnHeader = this.onMouseOverColumnHeader.bind(this);
-		this.onMouseUpColumnHeader = this.onMouseUpColumnHeader.bind(this);
-		this.onMouseDownRowHeader = this.onMouseDownRowHeader.bind(this);
-		this.onMouseOverRowHeader = this.onMouseOverRowHeader.bind(this);
+
+		this.handleMouseDownColumnHeader = this.handleMouseDownColumnHeader.bind(this);
+		this.handleMouseOverColumnHeader = this.handleMouseOverColumnHeader.bind(this);
+		this.handleMouseUpColumnHeader = this.handleMouseUpColumnHeader.bind(this);
+
+		this.handleMouseDownRowHeader = this.handleMouseDownRowHeader.bind(this);
+		this.handleMouseOverRowHeader = this.handleMouseOverRowHeader.bind(this);
 		this.onMouseUpRowHeader = this.onMouseUpRowHeader.bind(this);
-		this.onMouseDownAddRow = this.onMouseDownAddRow.bind(this);
-		this.onMouseDownAddColumn = this.onMouseDownAddColumn.bind(this);
+
+		this.handleAddRow = this.handleAddRow.bind(this);
+		this.handleAddColumn = this.handleAddColumn.bind(this);
+
 		this.pageClick = this.pageClick.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.onRevert = this.onRevert.bind(this);
+
 		this.isSelected = this.isSelected.bind(this);
 		this.isEditing = this.isEditing.bind(this);
 		this.isClearing = this.isClearing.bind(this);
+
 		this.handleComponentKey = this.handleComponentKey.bind(this);
 
 		this.handleKeyboardCellMovement =
@@ -219,7 +229,7 @@ export default class DataSheet extends React.Component<
 		}
 	}
 
-	onMouseDownColumnHeader(i: number, j: number, e: MouseEvent) {
+	handleMouseDownColumnHeader(i: number, j: number, e: MouseEvent) {
 		const endOfColumnIdx = this.props.data.length;
 		this._setState({
 			selectingColumn: true,
@@ -230,7 +240,7 @@ export default class DataSheet extends React.Component<
 		});
 
 		// Keep listening to mouse if user releases the mouse (dragging outside)
-		document.addEventListener("mouseup", this.onMouseUpColumnHeader);
+		document.addEventListener("mouseup", this.handleMouseUpColumnHeader);
 		// Listen for any outside mouse clicks
 		document.addEventListener("mousedown", this.pageClick);
 
@@ -240,18 +250,18 @@ export default class DataSheet extends React.Component<
 		document.addEventListener("paste", this.handlePaste);
 	}
 
-	onMouseOverColumnHeader(i: number, j: number) {
+	handleMouseOverColumnHeader(i: number, j: number) {
 		if (this.state.selectingColumn) {
 			this._setState({ end: { i: this.props.data.length, j } });
 		}
 	}
 
-	onMouseUpColumnHeader() {
+	handleMouseUpColumnHeader() {
 		this._setState({ selectingColumn: false });
-		document.removeEventListener("mouseup", this.onMouseUpColumnHeader);
+		document.removeEventListener("mouseup", this.handleMouseUpColumnHeader);
 	}
 
-	onMouseDownRowHeader(i: number, j: number, e: MouseEvent) {
+	handleMouseDownRowHeader(i: number, j: number, e: MouseEvent) {
 		const endOfLineIdx =
 			this.props.data.length > 0 ? this.props.data[0].length : 0;
 
@@ -274,7 +284,7 @@ export default class DataSheet extends React.Component<
 		document.addEventListener("paste", this.handlePaste);
 	}
 
-	onMouseOverRowHeader(i: number, j: number) {
+	handleMouseOverRowHeader(i: number, j: number) {
 		if (this.state.selectingRow) {
 			const endOfLineIdx =
 				this.props.data.length > 0 ? this.props.data[0].length : 0;
@@ -287,14 +297,14 @@ export default class DataSheet extends React.Component<
 		document.removeEventListener("mouseup", this.onMouseUpRowHeader);
 	}
 
-	onMouseDownAddRow() {
-		const { onRowAdded } = this.props;
-		onRowAdded && onRowAdded();
+	handleAddRow() {
+        const dispatch = useTableDispatch();
+        dispatch(addRow());
 	}
 
-	onMouseDownAddColumn() {
-		const { onColumnAdded } = this.props;
-		onColumnAdded && onColumnAdded();
+	handleAddColumn() {
+        const dispatch = useTableDispatch();
+        dispatch(addColumn());
 	}
 
 	pageClick(e: MouseEvent) {
@@ -979,10 +989,10 @@ export default class DataSheet extends React.Component<
 											column={j}
 											name={col.name}
 											onMouseDown={
-												this.onMouseDownColumnHeader
+												this.handleMouseDownColumnHeader
 											}
 											onMouseOver={
-												this.onMouseOverColumnHeader
+												this.handleMouseOverColumnHeader
 											}
 											onContextMenu={this.onContextMenu}
 										/>
@@ -997,7 +1007,7 @@ export default class DataSheet extends React.Component<
 									</React.Fragment>
 								);
 							})}
-						<AddColumn onMouseDown={this.onMouseDownAddColumn} />
+						<AddColumn onMouseDown={this.handleAddColumn} />
 					</tr>
 
 					{/* content rows */}
@@ -1013,8 +1023,8 @@ export default class DataSheet extends React.Component<
 									<RowHeader
 										key={`row-${i}-header`}
 										row={i}
-										onMouseDown={this.onMouseDownRowHeader}
-										onMouseOver={this.onMouseOverRowHeader}
+										onMouseDown={this.handleMouseDownRowHeader}
+										onMouseOver={this.handleMouseOverRowHeader}
 										onContextMenu={this.onContextMenu}
 									/>
 									{row.map((cell, j) => {
@@ -1131,7 +1141,7 @@ export default class DataSheet extends React.Component<
 						);
 					})}
 					<tr>
-						<AddRow onMouseDown={this.onMouseDownAddRow} />
+						<AddRow onMouseDown={this.handleAddRow} />
 					</tr>
 				</SheetRenderer>
 			</span>

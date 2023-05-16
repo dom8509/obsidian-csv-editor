@@ -14,7 +14,6 @@ export class CsvView extends TextFileView {
 	plugin: CsvTablePlugin;
 
 	public get extContentEl(): HTMLElement {
-		// @ts-ignore
 		return this.contentEl;
 	}
 

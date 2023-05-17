@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { CellShapeType } from './CellShape';
-
 type FunctionType = (...args: any[]) => any;
 
 export const COLUMN_HEADER_IDX = -1;
@@ -16,57 +14,35 @@ export interface ColumnHeaderProps {
 	onContextMenu: FunctionType;
 }
 
-export default class ColumnHeader extends React.Component<ColumnHeaderProps> {
-	static defaultProps = {
-		selected: false,
-		attributesRenderer: () => {},
-	};
+const ColumnHeader: React.FC<ColumnHeaderProps> = (
+	props: ColumnHeaderProps
+) => {
+	const className = [
+		"cell",
+		props.selected && "selected",
+		"read-only",
+		"column-header",
+		`{column}-idx`,
+	]
+		.filter((a) => a)
+		.join(" ");
 
-	constructor(props: ColumnHeaderProps) {
-		super(props);
+	return (
+		<td
+			className={className}
+			onMouseDown={(e) =>
+				props.onMouseDown(COLUMN_HEADER_IDX, props.column, e)
+			}
+			onMouseOver={(e) =>
+				props.onMouseOver(COLUMN_HEADER_IDX, props.column, e)
+			}
+			onContextMenu={(e) =>
+				props.onContextMenu(e, COLUMN_HEADER_IDX, props.column)
+			}
+		>
+			{props.name}
+		</td>
+	);
+};
 
-		this.handleMouseDown = this.handleMouseDown.bind(this);
-		this.handleMouseOver = this.handleMouseOver.bind(this);
-		this.handleContextMenu = this.handleContextMenu.bind(this);
-	}
-
-	handleMouseDown(e: MouseEvent) {
-		const { column, onMouseDown } = this.props;
-		onMouseDown(COLUMN_HEADER_IDX, column, e);
-	}
-
-	handleMouseOver(e: MouseEvent) {
-		const { column, onMouseOver } = this.props;
-		onMouseOver(COLUMN_HEADER_IDX, column, e);
-	}
-
-	handleContextMenu(e: MouseEvent) {
-		const { column, onContextMenu } = this.props;
-		onContextMenu(e, COLUMN_HEADER_IDX, column);
-	}
-
-	render() {
-		const { name, selected } = this.props;
-
-		const className = [
-			"cell",
-			selected && "selected",
-			"read-only",
-			"column-header",
-			`{column}-idx`,
-		]
-			.filter((a) => a)
-			.join(" ");
-
-		return (
-			<td
-				className={className}
-				onMouseDown={this.handleMouseDown}
-				onMouseOver={this.handleMouseOver}
-				onContextMenu={this.handleContextMenu}
-			>
-				{name}
-			</td>
-		);
-	}
-}
+export default ColumnHeader;

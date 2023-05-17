@@ -10,41 +10,20 @@ export interface ColumnSeparatorProps {
 	onContextMenu: FunctionType;
 }
 
-export default class ColumnSeparator extends React.Component<ColumnSeparatorProps> {
-	constructor(props: ColumnSeparatorProps) {
-		super(props);
+const ColumnSeparator: React.FC<ColumnSeparatorProps> = (
+	props: ColumnSeparatorProps
+) => {
+	const className = ["cell", "column-separator"].filter((a) => a).join(" ");
 
-		this.handleMouseDown = this.handleMouseDown.bind(this);
-		this.handleContextMenu = this.handleContextMenu.bind(this);
-		this.handleDoubleClick = this.handleDoubleClick.bind(this);
-	}
+	return (
+		<td
+			className={className}
+			onMouseDown={props.onMouseDown}
+			onDoubleClick={props.onDoubleClick}
+			onTouchEnd={props.onDoubleClick}
+			onContextMenu={props.onContextMenu}
+		/>
+	);
+};
 
-	handleMouseDown(e: MouseEvent) {
-		const { row, col, onMouseDown } = this.props;
-		onMouseDown(row, col, e);
-	}
-
-	handleDoubleClick(e: MouseEvent) {
-		const { row, col, onDoubleClick } = this.props;
-		onDoubleClick(row, col);
-	}
-
-	handleContextMenu(e: MouseEvent) {
-		const { row, col, onContextMenu } = this.props;
-		onContextMenu(e, row, col);
-	}
-
-	render() {
-		const className = ["cell", "column-separator"].filter((a) => a).join(" ");
-
-		return (
-			<td
-				className={className}
-				onMouseDown={this.handleMouseDown}
-				onDoubleClick={this.handleDoubleClick}
-				onTouchEnd={this.handleDoubleClick}
-				onContextMenu={this.handleContextMenu}
-			/>
-		);
-	}
-}
+export default ColumnSeparator;

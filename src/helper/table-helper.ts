@@ -52,14 +52,12 @@ export const createColumn = (currentBodyColumnCount: number): IColumn => {
 export const createHeaderRow = (): IHeaderRow => {
 	return {
 		id: uuidv4(),
-		selected: false,
 	};
 };
 
 export const createFooterRow = (): IFooterRow => {
 	return {
 		id: uuidv4(),
-		selected: false,
 	};
 };
 
@@ -72,7 +70,6 @@ export const createBodyRow = (currentBodyRowCount: number): IBodyRow => {
 		menuCellId: uuidv4(),
 		creationTime: currentTime,
 		lastEditedTime: currentTime,
-		selected: false,
 	};
 };
 
@@ -85,7 +82,6 @@ export const createHeaderCell = (
 		columnId,
 		rowId,
 		markdown: "New Column",
-		selected: false,
 	};
 };
 
@@ -101,7 +97,6 @@ export const createBodyCell = (
 		dateTime: null,
 		markdown:
 			cellType === CellType.CHECKBOX ? CHECKBOX_MARKDOWN_UNCHECKED : "",
-		selected: false,
 	};
 };
 
@@ -125,7 +120,6 @@ export const createFooterCell = (
 		columnId,
 		rowId,
 		functionType: GeneralFunctionType.NONE,
-		selected: false,
 	};
 };
 

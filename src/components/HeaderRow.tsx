@@ -4,7 +4,7 @@ import { addColumn } from 'data/column-state-operations';
 import { selectColumn } from 'data/select-operations';
 import React from 'react';
 
-import AddColumn from './AddColumn';
+import AddColumnButton from './AddColumnButton';
 import ColumnHeader from './ColumnHeader';
 import ColumnSeparator from './ColumnSeparator';
 
@@ -41,7 +41,7 @@ const HeaderRow = () => {
 		dispatchTable(addColumn());
 	};
 
-    console.log(table)
+	console.log(table);
 	return (
 		<tr>
 			<th key="booble" className="cell read-only" />
@@ -67,7 +67,7 @@ const HeaderRow = () => {
 					</React.Fragment>
 				);
 			})}
-			<AddColumn onMouseDown={handleAddColumnClicked} />
+			<AddColumnButton onMouseDown={handleAddColumnClicked} />
 		</tr>
 	);
 };

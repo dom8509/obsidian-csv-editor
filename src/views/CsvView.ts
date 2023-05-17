@@ -1,8 +1,8 @@
 import { createSheet } from 'components';
-import { CsvSheetColumnType, CsvSheetDataType } from 'components/CsvSheet';
+import { deserializeData } from 'helper/data-serializer';
 import CsvTablePlugin from 'main';
 import { Menu, Notice, TextFileView, WorkspaceLeaf } from 'obsidian';
-import { parse, ParseResult, unparse } from 'papaparse';
+import { ParseResult, unparse } from 'papaparse';
 import { createRoot } from 'react-dom/client';
 
 export const VIEW_TYPE_CSV = "csv-view";
@@ -11,6 +11,7 @@ export class CsvView extends TextFileView {
 	containerEl: HTMLElement;
 	// rootEl: Root;
 	csvData: ParseResult<Record<string, unknown>> | undefined;
+	data: string;
 	plugin: CsvTablePlugin;
 
 	public get extContentEl(): HTMLElement {
@@ -36,11 +37,11 @@ export class CsvView extends TextFileView {
 	}
 
 	// is called BEFORE the TextView is rendered
-	async onOpen() {}
+	// async onOpen() {}
 
-	async onClose() {
-		this.contentEl.empty();
-	}
+	// async onClose() {
+	// 	this.contentEl.empty();
+	// }
 
 	// is called when the plugin is loaded or updated
 	async onload() {
@@ -53,18 +54,18 @@ export class CsvView extends TextFileView {
 	}
 
 	getViewData(): string {
-		let viewData = "";
-		if (this.csvData) {
-			if (this.csvData.meta.fields) {
-				viewData = unparse({
-					fields: this.csvData.meta.fields,
-					data: this.csvData.data,
-				});
-			} else {
-				viewData = unparse(this.csvData.data);
-			}
-		}
-		return viewData;
+		// let viewData = "";
+		// if (this.csvData) {
+		// 	if (this.csvData.meta.fields) {
+		// 		viewData = unparse({
+		// 			fields: this.csvData.meta.fields,
+		// 			data: this.csvData.data,
+		// 		});
+		// 	} else {
+		// 		viewData = unparse(this.csvData.data);
+		// 	}
+		// }
+		return this.data;
 	}
 
 	// is called AFTER the TextView is rendered
@@ -72,41 +73,38 @@ export class CsvView extends TextFileView {
 		if (clear) {
 			this.clear();
 		}
+		this.data = data;
 
 		const containerEl = this.contentEl.createEl("div");
 		containerEl.classList.add("csv-table-wrapper");
 		containerEl.setAttribute("id", this.file.basename);
 		const rootEl = createRoot(containerEl);
 
-		this.csvData = parse(data, {
-			header: true,
-			dynamicTyping: true,
-		});
+		// this.csvData = parse(data, {
+		// 	header: true,
+		// 	dynamicTyping: true,
+		// });
 
-		const tableData: CsvSheetDataType = [];
-		const columnData: Array<CsvSheetColumnType> = [];
-		if (this.csvData.data.length > 0 && this.csvData.meta.fields) {
-			if (this.csvData.meta.fields) {
-				this.csvData.meta.fields.forEach((column) => {
-					columnData.push({ name: column });
-				});
-			}
+		// const tableData: CsvSheetDataType = [];
+		// const columnData: Array<CsvSheetColumnType> = [];
+		// if (this.csvData.data.length > 0 && this.csvData.meta.fields) {
+		// 	if (this.csvData.meta.fields) {
+		// 		this.csvData.meta.fields.forEach((column) => {
+		// 			columnData.push({ name: column });
+		// 		});
+		// 	}
 
-			this.csvData.data.forEach((row) => {
-				const dataRow: any = [];
-				this.csvData?.meta.fields?.forEach((column) => {
-					dataRow.push({ value: row[column] });
-				});
-				tableData.push(dataRow);
-			});
-		}
+		// 	this.csvData.data.forEach((row) => {
+		// 		const dataRow: any = [];
+		// 		this.csvData?.meta.fields?.forEach((column) => {
+		// 			dataRow.push({ value: row[column] });
+		// 		});
+		// 		tableData.push(dataRow);
+		// 	});
+		// }
 
-		const sheet = createSheet({
-			columns: columnData,
-			data: tableData,
-			onDataChanged: this.handleDataChanged,
-			onContextMenu: this.handleContextMenu,
-		});
+		const tableData = deserializeData(data, true);
+		const sheet = createSheet(tableData, this.handleDataChanged);
 
 		rootEl.render(sheet);
 	}
@@ -128,7 +126,9 @@ export class CsvView extends TextFileView {
 					//@ts-ignore: Argument of type 'any[]' is not assignable to parameter of type 'Record<string, unknown>'.
 					this.csvData.data.push(newRow);
 				} else if (change.col > this.csvData.meta.fields.length) {
-					this.csvData.meta.fields.push("Neue Spalte " + (this.csvData.meta.fields.length + 1));
+					this.csvData.meta.fields.push(
+						"Neue Spalte " + (this.csvData.meta.fields.length + 1)
+					);
 				}
 
 				// determine which column has changed

@@ -1,9 +1,11 @@
 import React from 'react';
 
+import {
+    DOWN_KEY, ENTER_KEY, ESCAPE_KEY, LEFT_KEY, RIGHT_KEY, TAB_KEY, UP_KEY
+} from '../types/keys';
 import Cell from './Cell';
 import { CellShapeType } from './CellShape';
 import DataEditor from './DataEditor';
-import { DOWN_KEY, ENTER_KEY, ESCAPE_KEY, LEFT_KEY, RIGHT_KEY, TAB_KEY, UP_KEY } from './keys';
 import { renderData, renderValue } from './renderHelpers';
 import ValueViewer from './ValueViewer';
 
@@ -205,13 +207,6 @@ export default class DataCell extends React.Component<
 		}
 	}
 
-	renderComponent(editing: boolean, cell: CellShapeType) {
-		const { component, readOnly, forceComponent } = cell;
-		if ((editing && !readOnly) || forceComponent) {
-			return component;
-		}
-	}
-
 	renderEditor(
 		editing: boolean,
 		cell: CellShapeType,
@@ -265,7 +260,6 @@ export default class DataCell extends React.Component<
 		const { updated } = this.state;
 
 		const content =
-			this.renderComponent(editing, cell) ||
 			this.renderEditor(editing, cell, row, col, dataEditor) ||
 			this.renderViewer(cell, row, col, valueRenderer, valueViewer);
 

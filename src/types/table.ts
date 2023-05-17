@@ -81,7 +81,7 @@ export enum NumberFunctionType {
 	RANGE = "range",
 }
 
-export type FunctionType = GeneralFunctionType | NumberFunctionType
+export type FunctionType = GeneralFunctionType | NumberFunctionType;
 
 export interface IColumn {
 	id: string;
@@ -165,6 +165,11 @@ export interface ISerializeableTableModel {
 	cellValues: string[][];
 }
 
+export interface IHashIndexModel {
+	rowPositions: Map<string, number>;
+	columnPositions: Map<string, number>;
+}
+
 export interface IBaseTableState {
 	pluginVersion: number;
 }
@@ -172,4 +177,5 @@ export interface IBaseTableState {
 export interface ITableState extends IBaseTableState {
 	model: ITableModel;
 	serialization: ISerializeableTableModel;
+	hashIndizes: IHashIndexModel;
 }

@@ -44,10 +44,17 @@ export const deserializeData = (
 		dynamicTyping: true,
 	});
 
+	const rowPositions = new Map<string, number>();
+	const columnPositions = new Map<string, number>();
+
+	console.log(csvData)
+
 	//Create columns
 	const columns: IColumn[] = [];
-	csvData.meta.fields?.map((column, x) => {
-		columns.push(createColumn(x));
+	csvData.meta.fields?.map((_, x) => {
+		const column = createColumn(x);
+		columns.push(column);
+		columnPositions.set(column.id, x);
 	});
 
 	// Create headers
@@ -70,7 +77,9 @@ export const deserializeData = (
 	const cellValues: string[][] = [];
 	csvData.data.forEach((row, y) => {
 		// Add a new row
-		bodyRows.push(createBodyRow(y));
+		const bodyRow = createBodyRow(y);
+		bodyRows.push(bodyRow);
+		rowPositions.set(bodyRow.id, y);
 
 		const cellValueRow: string[] = [];
 		// Add cells
@@ -93,7 +102,8 @@ export const deserializeData = (
 
 	footerRows.map((row) => {
 		columns.map((column) => {
-			footerCells.push(createFooterCell(column.id, row.id));
+			const footerCell = createFooterCell(column.id, row.id);
+			footerCells.push(footerCell);
 		});
 	});
 
@@ -115,6 +125,10 @@ export const deserializeData = (
 		serialization: {
 			headerCellValues,
 			cellValues,
+		},
+		hashIndizes: {
+			rowPositions,
+			columnPositions,
 		},
 		pluginVersion: CURRENT_PLUGIN_VERSION,
 	};

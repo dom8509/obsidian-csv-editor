@@ -1,9 +1,9 @@
+import SelectProvider from 'context/SelectContext';
 import TableProvider from 'context/TableContext';
 import React from 'react';
-import { TableState } from 'types/table';
+import { ITableState } from 'types/table';
 
 import Cell from './Cell';
-import { CsvSheet } from './CsvSheet';
 import DataEditor from './DataEditor';
 import DataSheet from './DataSheet';
 import { renderData, renderValue } from './renderHelpers';
@@ -22,14 +22,16 @@ export {
 	renderData,
 };
 
-export const createSheet = (data: TableState, onDataChangedCallback: any) => {
+export const createSheet = (data: ITableState, onDataChanged: any) => {
 	return (
 		<React.StrictMode>
 			<TableProvider
-				onDataChanged={onDataChangedCallback}
+				onDataChanged={onDataChanged}
 				initialState={data}
 			>
-				<DataSheet />
+				<SelectProvider>
+					<DataSheet />
+				</SelectProvider>
 			</TableProvider>
 		</React.StrictMode>
 	);

@@ -1,7 +1,8 @@
 import { CHECKBOX_MARKDOWN_UNCHECKED } from 'types/constants';
 import {
     CellType, CurrencyType, DateFormat, FilterType, GeneralFunctionType, IBodyCell, IBodyRow,
-    IColumn, IFilterRule, IFooterCell, IFooterRow, IHeaderCell, IHeaderRow, ITag, SortDir
+    IColumn, IFilterRule, IFooterCell, IFooterRow, IHeaderCell, IHeaderRow, ITag, OverflowType,
+    SortDir
 } from 'types/table';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -45,7 +46,7 @@ export const createColumn = (currentBodyColumnCount: number): IColumn => {
 		type: CellType.TEXT,
 		currencyType: CurrencyType.UNITED_STATES,
 		dateFormat: DateFormat.MM_DD_YYYY,
-		shouldWrapOverflow: false,
+		overflow: OverflowType.NOWRAP,
 	};
 };
 

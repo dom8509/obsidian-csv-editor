@@ -3,17 +3,18 @@ import { useTable, useTableDispatch } from 'context/TableContext';
 import { addColumn } from 'data/column-state-operations';
 import { selectColumn } from 'data/select-operations';
 import React from 'react';
+import { IColumn } from 'types/table';
 
 import AddColumnButton from './AddColumnButton';
-import ColumnHeader from './ColumnHeader';
 import ColumnSeparator from './ColumnSeparator';
+import DataCell from './DataCell';
 
 const HeaderRow = () => {
 	const table = useTable();
 	const dispatchTable = useTableDispatch();
 	const dispatchSelect = useSelectDispatch();
 
-	const { headerCells } = table.model;
+	const { headerCells, columns } = table.model;
 
 	const handleMouseDown = (column: number, event: MouseEvent) => {
 		const lastRowIndex = table.model.bodyRows.length;
@@ -48,13 +49,16 @@ const HeaderRow = () => {
 			{headerCells.map((cell, column) => {
 				return (
 					<React.Fragment key={cell.id}>
-						<ColumnHeader
-							key={`${cell.id}-value`}
+						<DataCell
+							row={0}
 							column={column}
-							name={cell.markdown}
+							cell={cell}
+							columnData={columns.find((column) => column.id == cell.columnId) as IColumn}
 							onMouseDown={handleMouseDown}
 							onMouseOver={handleMouseOver}
+							onDoubleClick={() => {}}
 							onContextMenu={handleContextMenu}
+							onChange={() => {}}
 						/>
 						<ColumnSeparator
 							row={0}

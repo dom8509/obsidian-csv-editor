@@ -6,6 +6,12 @@ export enum SortDir {
 	NONE = "default",
 }
 
+export enum OverflowType {
+	WRAP = "wrap",
+	NOWRAP = "nowrap",
+	CLIP = "clip",
+}
+
 export enum CellType {
 	TEXT = "text",
 	NUMBER = "number",
@@ -93,7 +99,7 @@ export interface IColumn {
 	isVisible: boolean;
 	dateFormat: DateFormat;
 	currencyType: CurrencyType;
-	shouldWrapOverflow: boolean;
+	overflow: OverflowType;
 }
 
 export interface IFilterRule {

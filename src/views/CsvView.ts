@@ -1,16 +1,14 @@
 import { createSheet } from 'components';
-import { deserializeData } from 'helper/data-serializer';
+import { deserializeData, serializeData } from 'helper/data-serializer';
 import CsvTablePlugin from 'main';
 import { Menu, Notice, TextFileView, WorkspaceLeaf } from 'obsidian';
-import { ParseResult, unparse } from 'papaparse';
 import { createRoot } from 'react-dom/client';
+import { ISerializeableTableModel } from 'types/table';
 
 export const VIEW_TYPE_CSV = "csv-view";
 
 export class CsvView extends TextFileView {
 	containerEl: HTMLElement;
-	// rootEl: Root;
-	csvData: ParseResult<Record<string, unknown>> | undefined;
 	data: string;
 	plugin: CsvTablePlugin;
 
@@ -24,7 +22,7 @@ export class CsvView extends TextFileView {
 		this.plugin = plugin;
 		console.log(this.plugin);
 
-		this.handleDataChanged = this.handleDataChanged.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 		this.handleContextMenu = this.handleContextMenu.bind(this);
 	}
 
@@ -54,17 +52,7 @@ export class CsvView extends TextFileView {
 	}
 
 	getViewData(): string {
-		// let viewData = "";
-		// if (this.csvData) {
-		// 	if (this.csvData.meta.fields) {
-		// 		viewData = unparse({
-		// 			fields: this.csvData.meta.fields,
-		// 			data: this.csvData.data,
-		// 		});
-		// 	} else {
-		// 		viewData = unparse(this.csvData.data);
-		// 	}
-		// }
+		console.log("DEBUG: getViewData called")
 		return this.data;
 	}
 
@@ -80,63 +68,20 @@ export class CsvView extends TextFileView {
 		containerEl.setAttribute("id", this.file.basename);
 		const rootEl = createRoot(containerEl);
 
-		// this.csvData = parse(data, {
-		// 	header: true,
-		// 	dynamicTyping: true,
-		// });
-
-		// const tableData: CsvSheetDataType = [];
-		// const columnData: Array<CsvSheetColumnType> = [];
-		// if (this.csvData.data.length > 0 && this.csvData.meta.fields) {
-		// 	if (this.csvData.meta.fields) {
-		// 		this.csvData.meta.fields.forEach((column) => {
-		// 			columnData.push({ name: column });
-		// 		});
-		// 	}
-
-		// 	this.csvData.data.forEach((row) => {
-		// 		const dataRow: any = [];
-		// 		this.csvData?.meta.fields?.forEach((column) => {
-		// 			dataRow.push({ value: row[column] });
-		// 		});
-		// 		tableData.push(dataRow);
-		// 	});
-		// }
-
 		const tableData = deserializeData(data, true);
-		const sheet = createSheet(tableData, this.handleDataChanged);
+		const sheet = createSheet(tableData, this.handleChange);
 
 		rootEl.render(sheet);
 	}
 
 	clear(): void {
 		this.contentEl.empty();
-		this.csvData = undefined;
 	}
 
-	handleDataChanged(changes: Array<any>) {
-		if (this.csvData?.meta.fields) {
-			for (const change of changes) {
-				if (change.row >= this.csvData.data.length) {
-					const newRow: Record<string, unknown> =
-						this.csvData.meta.fields
-							.map((fieldName) => ({ [fieldName]: null }))
-							.reduce((acc, val) => ({ ...acc, ...val }), {});
-
-					//@ts-ignore: Argument of type 'any[]' is not assignable to parameter of type 'Record<string, unknown>'.
-					this.csvData.data.push(newRow);
-				} else if (change.col > this.csvData.meta.fields.length) {
-					this.csvData.meta.fields.push(
-						"Neue Spalte " + (this.csvData.meta.fields.length + 1)
-					);
-				}
-
-				// determine which column has changed
-				const colName = this.csvData?.meta.fields[change.col];
-				this.csvData.data[change.row][colName] = change.value;
-			}
-			this.requestSave();
-		}
+	handleChange(data: ISerializeableTableModel) {
+		console.log("DEBUG: handleChange called")
+		this.data = serializeData(data);
+		this.requestSave();
 	}
 
 	handleContextMenu(event: any, cell: any, i: number, j: number) {

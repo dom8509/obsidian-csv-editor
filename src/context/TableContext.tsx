@@ -8,10 +8,10 @@ import {
     EVENT_HEADER_CELL_CLEARED, EVENT_HEADER_CELL_UPDATED, EVENT_ROW_ADDED
 } from 'types/events';
 
-import { IBodyCell, ITableState } from '../types/table';
+import { IBodyCell, IHeaderCell, ISerializeableTableModel, ITableState } from '../types/table';
 
 interface Props {
-	onDataChanged: () => void;
+	onChange: (data: ISerializeableTableModel) => void;
 	initialState: ITableState;
 	children: ReactNode;
 }
@@ -42,14 +42,14 @@ export const useTableDispatch = () => {
 };
 
 export default function TableProvider({
-	onDataChanged,
+	onChange,
 	initialState,
 	children,
 }: Props) {
 	const [table, dispatch] = useReducer(tableReducer, initialState);
 
 	useEffect(() => {
-		onDataChanged();
+		onChange(table.serialization);
 	}, [table.serialization]);
 
 	return (
@@ -69,7 +69,7 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			const cellValuesCopy = structuredClone(
 				prevState.serialization.cellValues
 			);
-			cellValuesCopy[action.payload.column][action.payload.row] =
+			cellValuesCopy[action.payload.rowIndex][action.payload.columnIndex] =
 				action.payload.value;
 
 			return {
@@ -80,7 +80,7 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 						if (cell.id == action.payload.cellId) {
 							return {
 								...cell,
-								[action.payload.key as keyof IBodyCell]:
+								[action.payload.key as keyof IHeaderCell]:
 									action.payload.value,
 							};
 						}
@@ -99,7 +99,7 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			const headerCellValuesCopy = structuredClone(
 				prevState.serialization.headerCellValues
 			);
-			headerCellValuesCopy[action.payload.column] = action.payload.value;
+			headerCellValuesCopy[action.payload.columnIndex] = action.payload.value;
 
 			return {
 				...prevState,
@@ -109,7 +109,7 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 						if (cell.id == action.payload.cellId) {
 							return {
 								...cell,
-								[action.payload.key as keyof IBodyCell]:
+								[action.payload.key as keyof IHeaderCell]:
 									action.payload.value,
 							};
 						}
@@ -128,7 +128,7 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			const headerCellValuesCopy = structuredClone(
 				prevState.serialization.headerCellValues
 			);
-			headerCellValuesCopy[action.payload.column] =
+			headerCellValuesCopy[action.payload.columnIndex] =
 				"Column " + (action.payload.column + 1);
 
 			return {
@@ -150,10 +150,11 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 		case EVENT_BODY_CELL_UPDATED: {
 			console.log("Action EVENT_BODY_CELL_UPDATED triggered");
 
+			console.log(action)
 			const cellValuesCopy = structuredClone(
 				prevState.serialization.cellValues
 			);
-			cellValuesCopy[action.payload.column][action.payload.row] =
+			cellValuesCopy[action.payload.rowIndex][action.payload.columnIndex] =
 				action.payload.value;
 
 			return {
@@ -183,7 +184,7 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			const cellValuesCopy = structuredClone(
 				prevState.serialization.cellValues
 			);
-			cellValuesCopy[action.payload.column][action.payload.row] = "";
+			cellValuesCopy[action.payload.rowIndex][action.payload.columnIndex] = "";
 
 			return {
 				...prevState,
@@ -206,6 +207,8 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			};
 		}
 		case EVENT_ROW_ADDED: {
+			console.log("Action EVENT_ROW_ADDED triggered");
+
 			const { bodyRows, bodyCells, columns } = prevState.model;
 			const newRow = createBodyRow(bodyRows.length);
 			const cellsCopy = structuredClone(bodyCells);
@@ -236,6 +239,8 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			};
 		}
 		case EVENT_COLUMN_ADDED: {
+			console.log("Action EVENT_COLUMN_ADDED triggered");
+
 			const { headerRows, columns, bodyRows, bodyCells, headerCells } =
 				prevState.model;
 			const newColumn = createColumn(columns.length);

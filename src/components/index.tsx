@@ -7,10 +7,10 @@ import { ITableState } from 'types/table';
 
 import DataSheet from './DataSheet';
 
-export const createSheet = (data: ITableState, onDataChanged: any) => {
+export const createSheet = (data: ITableState, onChange: any) => {
 	return (
 		<React.StrictMode>
-			<TableProvider onDataChanged={onDataChanged} initialState={data}>
+			<TableProvider onChange={onChange} initialState={data}>
 				<SelectProvider>
 					<DataSheet />
 				</SelectProvider>

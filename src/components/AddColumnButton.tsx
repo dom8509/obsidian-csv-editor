@@ -2,11 +2,11 @@ import React from 'react';
 
 type FunctionType = () => void;
 
-export interface AddColumnProps {
+export interface AddColumnButtonProps {
 	onMouseDown: FunctionType;
 }
 
-const AddColumnButton: React.FC<AddColumnProps> = (props: AddColumnProps) => {
+const AddColumnButton: React.FC<AddColumnButtonProps> = (props: AddColumnButtonProps) => {
 	const className = ["cell", "read-only", "add-header-btn"]
 		.filter((a) => a)
 		.join(" ");

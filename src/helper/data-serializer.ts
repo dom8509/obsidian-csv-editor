@@ -2,7 +2,7 @@ import { parse, ParseResult, unparse } from 'papaparse';
 import { CURRENT_PLUGIN_VERSION } from 'types/constants';
 import {
     IBodyCell, IBodyRow, IColumn, IFilterRule, IFooterCell, IFooterRow, IHeaderCell, IHeaderRow,
-    ITableState, ITag
+    ISerializeableTableModel, ITableState, ITag
 } from 'types/table';
 
 import {
@@ -18,10 +18,10 @@ import {
  * @returns         Data as serializeable string.
  *
  */
-export const serializeData = (data: ITableState): string => {
+export const serializeData = (data: ISerializeableTableModel): string => {
 	const serializedData = unparse({
-		fields: data.serialization.headerCellValues,
-		data: data.serialization.cellValues,
+		fields: data.headerCellValues,
+		data: data.cellValues,
 	});
 
 	return serializedData;

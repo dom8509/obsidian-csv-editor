@@ -19,6 +19,10 @@ span.data-sheet-container:focus {
   font-weight: bold !important;
   text-align: center !important;
   min-width: 30px !important;
+  background: whitesmoke;
+  color: black;
+  /* color: #999; */
+  text-align: center;
 }
 
 .data-sheet-container .data-sheet .cell:not(.column-separator):not(.row-separator):not(.separator) {
@@ -87,7 +91,7 @@ span.data-sheet-container:focus {
   outline: none !important;
   border: 2px solid rgb(33, 133, 208);
   text-align: right;
-  width: calc(100% - 6px);
+  /* width: calc(100% - 6px); */
   background: none;
   display: block;
   color: black;

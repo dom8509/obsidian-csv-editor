@@ -139,6 +139,11 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 
 	const handleDoubleClick = (e: MouseEvent) => {
 		setEditing(true);
+	};
+
+	const handleChange = (value: string) => {
+		setEditing(false);
+		props.onChange(props.cell, value);
 	}
 
 	// handleContextMenu(e: MouseEvent) {
@@ -169,23 +174,6 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 	// 	}
 	// }
 
-	const renderEditor = () => {
-		if (editing) {
-			return (
-				<DataEditor
-					value={props.cell.markdown}
-					onChange={props.onChange}
-				/>
-			);
-		}
-	};
-
-	const renderViewer = () => {
-		return <ValueViewer value={props.cell.markdown} />;
-	};
-
-	const content = renderEditor() || renderViewer();
-
 	const className = [
 		props.className,
 		"cell",
@@ -210,7 +198,14 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 			onDoubleClick={handleDoubleClick}
 			onContextMenu={props.onContextMenu}
 		>
-			{content}
+			{editing ? (
+				<DataEditor
+					value={props.cell.markdown}
+					onChange={handleChange}
+				/>
+			) : (
+				<ValueViewer value={props.cell.markdown} />
+			)}
 		</Cell>
 	);
 };

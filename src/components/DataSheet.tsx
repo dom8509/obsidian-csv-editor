@@ -1,5 +1,6 @@
 import React from 'react';
 
+import BodyRows from './BodyRows';
 import HeaderRow from './HeaderRow';
 
 const DataSheet = () => {
@@ -18,6 +19,7 @@ const DataSheet = () => {
 				<tbody>
 					{/* header row */}
 					<HeaderRow />
+					<BodyRows />
 				</tbody>
 			</table>
 		</span>

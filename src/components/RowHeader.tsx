@@ -19,7 +19,6 @@ const RowHeader: React.FC<RowHeaderProps> = (props: RowHeaderProps) => {
 		props.selected && "selected",
 		"read-only",
 		"row-header",
-		`{row}-idx`,
 	]
 		.filter((a) => a)
 		.join(" ");

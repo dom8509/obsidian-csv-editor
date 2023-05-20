@@ -1,6 +1,6 @@
 export const TAB_KEY = 9;
-export const ENTER_KEY = 13;
-export const ESCAPE_KEY = 27;
+export const ENTER_KEY = "Enter";
+export const ESCAPE_KEY = "Escape";
 export const LEFT_KEY = 37;
 export const UP_KEY = 38;
 export const RIGHT_KEY = 39;

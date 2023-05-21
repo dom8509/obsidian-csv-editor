@@ -150,7 +150,6 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 		case EVENT_BODY_CELL_UPDATED: {
 			console.log("Action EVENT_BODY_CELL_UPDATED triggered");
 
-			console.log(action)
 			const cellValuesCopy = structuredClone(
 				prevState.serialization.cellValues
 			);

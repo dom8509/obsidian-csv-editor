@@ -12,23 +12,23 @@ import DataCell from './DataCell';
 
 const HeaderRow = () => {
 	const table = useTable();
-	console.log("useTable: "); console.log(useTable)
+	// console.log("useTable: "); console.log(useTable)
 	const select = useSelect();
-	console.log("useSelect: "); console.log(select)
+	// console.log("useSelect: "); console.log(select)
 	const dispatchTable = useTableDispatch();
 	const dispatchSelect = useSelectDispatch();
 
 	const { headerCells, columns } = table.model;
 
 	const handleMouseDown = (column: number, event: MouseEvent) => {
-		// const lastRowIndex = table.model.bodyRows.length;
-		// dispatchSelect(selectColumnBegin(lastRowIndex, column));
+		const lastRowIndex = table.model.bodyRows.length;
+		dispatchSelect(selectColumnBegin(lastRowIndex, column));
 	};
 
 	const handleMouseOver = (column: number, event: MouseEvent) => {
-		// const lastRowIndex = table.model.bodyRows.length;
+		const lastRowIndex = table.model.bodyRows.length;
 		if (select.isSelectingColumns) {
-			// dispatchSelect(selectColumnAdd(lastRowIndex, column));
+			dispatchSelect(selectColumnAdd(lastRowIndex, column));
 		}
 	};
 
@@ -59,7 +59,6 @@ const HeaderRow = () => {
 		}
 	};
 
-	console.log(table);
 	return (
 		<tr>
 			<th key="booble" className="cell read-only" />

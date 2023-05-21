@@ -23,44 +23,52 @@ const BodyRows = () => {
 	const { bodyRows, columns, bodyCells } = table.model;
 
 	const handleMouseDown = (row: number, column: number) => {
-		// console.debug("in handleMouseDown")
-		// // Keep listening to mouse if user releases the mouse (dragging outside)
-		// document.addEventListener("mouseup", handleMouseUp);
-		// // Listen for any outside mouse clicks
-		// document.addEventListener("mousedown", handlePageClick);
+		console.debug("in handleMouseDown");
 
-		// dispatchSelect(selectCellBegin(row, column));
+		dispatchSelect(selectCellBegin(row, column));
 
-		// console.debug("in handleMouseDown end")
+		// if (
+		// 	!select.isSelectingCells &&
+		// 	!select.isSelectingRows &&
+		// 	!select.isSelectingColumns
+		// ) {
+		// 	// Keep listening to mouse if user releases the mouse (dragging outside)
+		// 	document.addEventListener("mouseup", handleMouseUp);
+		// 	// Listen for any outside mouse clicks
+		// 	document.addEventListener("mousedown", handlePageClick);
+		// }
+
+		console.debug("in handleMouseDown end");
 	};
 
 	const handleMouseOver = (row: number, column: number) => {
-		// if (select.isSelectingCells) {
-		// 	const val = selectCellAdd(row, column);
-		// 	console.debug("calling dispatch with action:"), console.debug(val);
-		// 	dispatchSelect(val);
-		// }
+		console.debug("in handleMouseOver");
+
+		if (select.isSelectingCells) {
+			const val = selectCellAdd(row, column);
+			console.debug("calling dispatch with action:"), console.debug(val);
+			dispatchSelect(val);
+		}
 	};
 
 	const handleMouseUp = () => {
-		// console.debug("in handleMouseUp 2")
-		// console.debug(select)
+		// console.debug("in handleMouseUp 2");
+		// console.debug(select);
+
+		// if (select.isSelectingCells) {
+		// 	console.debug("in handleMouseUp with isSelectingCells");
+		// 	const val = selectFinish();
+		// 	console.debug("calling dispatch with action:"), console.debug(val);
+		// 	dispatchSelect(val);
+		// }
 
 		// document.removeEventListener("mouseup", handleMouseUp);
 		// document.removeEventListener("mousedown", handlePageClick);
-
-		// if (select.isSelectingCells) {
-		// 	console.debug("in handleMouseUp with isSelectingCells")
-		// 	const val = selectFinish();
-		// 	console.debug("calling dispatch with action:"), console.debug(val);
-
-		// 	dispatchSelect(val);
-		// }
 	};
 
 	const handlePageClick = () => {
 		// console.debug("In handlePageClick");
-		
+
 		// if (select.isSelectingCells) {
 		// 	dispatchSelect(selectClear());
 		// }

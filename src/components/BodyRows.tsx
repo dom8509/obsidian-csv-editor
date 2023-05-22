@@ -1,4 +1,4 @@
-import { useSelect, useSelectDispatch } from 'context/SelectableContext';
+import { useSelectable, useSelectableDispatch } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { updateBodyCellValue } from 'data/cell-state-operations';
 import { addRow } from 'data/row-state-operations';
@@ -18,31 +18,31 @@ import RowHeader from './RowHeader';
 
 const BodyRows = () => {
 	const table = useTable();
-	const select = useSelect();
+	const selectable = useSelectable();
 	const dispatchTable = useTableDispatch();
-	const dispatchSelect = useSelectDispatch();
+	const dispatchSelectable = useSelectableDispatch();
 
 	const { bodyRows, columns, bodyCells } = table.model;
 
 	const handleMouseDownBodyCell = (row: number, column: number) => {
-		dispatchSelect(selectCellBegin(row, column));
+		dispatchSelectable(selectCellBegin(row, column));
 	};
 
 	const handleMouseOverBodyCell = (row: number, column: number) => {
-		if (select.isSelectingCells) {
-			dispatchSelect(selectCellAdd(row, column));
+		if (selectable.isSelectingCells) {
+			dispatchSelectable(selectCellAdd(row, column));
 		}
 	};
 
 	const handleMouseDownRowHeader = (row: number) => {
 		const lastColumnIndex = table.model.columns.length - 1;
-		dispatchSelect(selectRowBegin(row, lastColumnIndex));
+		dispatchSelectable(selectRowBegin(row, lastColumnIndex));
 	};
 
 	const handleMouseOverRowHeader = (row: number) => {
-		if (select.isSelectingRows) {
+		if (selectable.isSelectingRows) {
 			const lastColumnIndex = table.model.columns.length - 1;
-			dispatchSelect(selectRowAdd(row, lastColumnIndex));
+			dispatchSelectable(selectRowAdd(row, lastColumnIndex));
 		}
 	};
 
@@ -105,7 +105,7 @@ const BodyRows = () => {
 											cell={cell}
 											columnData={column}
 											selected={isSelected(
-												select,
+												selectable,
 												row.index,
 												column.index
 											)}

@@ -1,4 +1,3 @@
-import { max3, min3 } from 'helper/compare-helper';
 import React, {
     createContext, Dispatch, ReactNode, useContext, useEffect, useReducer, useRef
 } from 'react';
@@ -32,22 +31,22 @@ const SelectableDispatchContext = createContext<Dispatch<any> | undefined>(
 	undefined
 );
 
-export const useSelect = () => {
+export const useSelectable = () => {
 	const context = useContext(SelectableContext);
 	if (context === undefined) {
 		throw new Error(
-			"useSelect() called without a <SelectProvider /> in the tree."
+			"useSelectable() called without a <SelectableProvider /> in the tree."
 		);
 	}
 
 	return context;
 };
 
-export const useSelectDispatch = () => {
+export const useSelectableDispatch = () => {
 	const context = useContext(SelectableDispatchContext);
 	if (context === undefined) {
 		throw new Error(
-			"useSelectDispatch() called without a <SelectProvider /> in the tree."
+			"useSelectableDispatch() called without a <SelectableProvider /> in the tree."
 		);
 	}
 	return context;

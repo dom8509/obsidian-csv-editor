@@ -1,4 +1,4 @@
-import { useSelect, useSelectDispatch } from 'context/SelectableContext';
+import { useSelectable, useSelectableDispatch } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { updateHeaderCellValue } from 'data/cell-state-operations';
 import { addColumn } from 'data/column-state-operations';
@@ -12,21 +12,21 @@ import DataCell from './DataCell';
 
 const HeaderRow = () => {
 	const table = useTable();
-	const select = useSelect();
+	const selectable = useSelectable();
 	const dispatchTable = useTableDispatch();
-	const dispatchSelect = useSelectDispatch();
+	const dispatchSelectable = useSelectableDispatch();
 
 	const { headerCells, columns } = table.model;
 
 	const handleMouseDown = (column: number) => {
 		const lastRowIndex = table.model.bodyRows.length - 1;
-		dispatchSelect(selectColumnBegin(lastRowIndex, column));
+		dispatchSelectable(selectColumnBegin(lastRowIndex, column));
 	};
 
 	const handleMouseOver = (column: number) => {
 		const lastRowIndex = table.model.bodyRows.length - 1;
-		if (select.isSelectingColumns) {
-			dispatchSelect(selectColumnAdd(lastRowIndex, column));
+		if (selectable.isSelectingColumns) {
+			dispatchSelectable(selectColumnAdd(lastRowIndex, column));
 		}
 	};
 

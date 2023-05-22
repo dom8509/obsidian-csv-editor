@@ -39,8 +39,8 @@ export const selectRowAdd = (row: number, column: number) => ({
 export const selectColumnBegin = (row: number, column: number) => ({
 	type: EVENT_SELECT_COLUMN_STARTED,
 	payload: {
-		row,
-		column,
+		row: row,
+		column: column,
 	},
 });
 

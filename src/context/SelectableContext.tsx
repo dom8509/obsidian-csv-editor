@@ -25,13 +25,15 @@ interface Props {
 	children: ReactNode;
 }
 
-const SelectContext = createContext<SelectedCellsType | undefined>(undefined);
-const SelectDispatchContext = createContext<Dispatch<any> | undefined>(
+const SelectableContext = createContext<SelectedCellsType | undefined>(
+	undefined
+);
+const SelectableDispatchContext = createContext<Dispatch<any> | undefined>(
 	undefined
 );
 
 export const useSelect = () => {
-	const context = useContext(SelectContext);
+	const context = useContext(SelectableContext);
 	if (context === undefined) {
 		throw new Error(
 			"useSelect() called without a <SelectProvider /> in the tree."
@@ -42,7 +44,7 @@ export const useSelect = () => {
 };
 
 export const useSelectDispatch = () => {
-	const context = useContext(SelectDispatchContext);
+	const context = useContext(SelectableDispatchContext);
 	if (context === undefined) {
 		throw new Error(
 			"useSelectDispatch() called without a <SelectProvider /> in the tree."
@@ -51,7 +53,7 @@ export const useSelectDispatch = () => {
 	return context;
 };
 
-export default function SelectProvider({ children }: Props) {
+export default function SelectableProvider({ children }: Props) {
 	const [select, dispatch] = useReducer(selectReducer, {
 		isSelectingCells: false,
 		isSelectingRows: false,
@@ -113,13 +115,13 @@ export default function SelectProvider({ children }: Props) {
 	}, [select, dgDom]);
 
 	return (
-		<SelectContext.Provider value={select}>
-			<SelectDispatchContext.Provider value={dispatch}>
+		<SelectableContext.Provider value={select}>
+			<SelectableDispatchContext.Provider value={dispatch}>
 				<span className="select-container" ref={dgDom}>
 					{children}
 				</span>
-			</SelectDispatchContext.Provider>
-		</SelectContext.Provider>
+			</SelectableDispatchContext.Provider>
+		</SelectableContext.Provider>
 	);
 }
 
@@ -147,28 +149,15 @@ const selectReducer = (
 		case EVENT_SELECT_CELL_UPDATED: {
 			console.debug("Action EVENT_SELECT_CELL_UPDATED triggered");
 
-			if (!prevState.start || !prevState.end) {
-				throw "Missing EVENT_SELECT_CELL_STARTED event";
-			}
-
-			const newStart: SelectedCellType = {
-				row: min3(prevState.start.row, prevState.end.row, action.payload.row),
-				column: min3(prevState.start.column, prevState.end.column, action.payload.column)
-			};
-			const newEnd: SelectedCellType = {
-				row: max3(prevState.start.row, prevState.end.row, action.payload.row),
-				column: max3(prevState.start.column, prevState.end.column, action.payload.column)
-			};
-			console.log(newStart);
-			console.log(newEnd);
-
 			if (!prevState.isSelectingCells) {
 				throw "Missing EVENT_SELECT_CELL_STARTED event";
 			} else {
 				return {
 					...prevState,
-					start: newStart,
-					end: newEnd
+					end: {
+						row: action.payload.row,
+						column: action.payload.column,
+					},
 				};
 			}
 		}
@@ -177,6 +166,10 @@ const selectReducer = (
 
 			return {
 				...prevState,
+				start: {
+					row: action.payload.row,
+					column: 0,
+				},
 				end: {
 					row: action.payload.row,
 					column: action.payload.column,
@@ -204,6 +197,10 @@ const selectReducer = (
 
 			return {
 				...prevState,
+				start: {
+					row: 0,
+					column: action.payload.column,
+				},
 				end: {
 					row: action.payload.row,
 					column: action.payload.column,

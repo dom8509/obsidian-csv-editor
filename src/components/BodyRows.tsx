@@ -1,8 +1,10 @@
-import { useSelect, useSelectDispatch } from 'context/SelectContext';
+import { useSelect, useSelectDispatch } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { updateBodyCellValue } from 'data/cell-state-operations';
 import { addRow } from 'data/row-state-operations';
-import { selectCellAdd, selectCellBegin, selectClear, selectFinish } from 'data/select-operations';
+import {
+    selectCellAdd, selectCellBegin, selectRowAdd, selectRowBegin
+} from 'data/select-operations';
 import { isSelected } from 'helper/select-helper';
 import { createBodyCell } from 'helper/table-helper';
 import React from 'react';
@@ -22,59 +24,26 @@ const BodyRows = () => {
 
 	const { bodyRows, columns, bodyCells } = table.model;
 
-	const handleMouseDown = (row: number, column: number) => {
-		console.debug("in handleMouseDown");
-
+	const handleMouseDownBodyCell = (row: number, column: number) => {
 		dispatchSelect(selectCellBegin(row, column));
-
-		// if (
-		// 	!select.isSelectingCells &&
-		// 	!select.isSelectingRows &&
-		// 	!select.isSelectingColumns
-		// ) {
-		// 	// Keep listening to mouse if user releases the mouse (dragging outside)
-		// 	document.addEventListener("mouseup", handleMouseUp);
-		// 	// Listen for any outside mouse clicks
-		// 	document.addEventListener("mousedown", handlePageClick);
-		// }
-
-		console.debug("in handleMouseDown end");
 	};
 
-	const handleMouseOver = (row: number, column: number) => {
-		console.debug("in handleMouseOver");
-
+	const handleMouseOverBodyCell = (row: number, column: number) => {
 		if (select.isSelectingCells) {
-			const val = selectCellAdd(row, column);
-			console.debug("calling dispatch with action:"), console.debug(val);
-			dispatchSelect(val);
+			dispatchSelect(selectCellAdd(row, column));
 		}
 	};
 
-	const handleMouseUp = () => {
-		// console.debug("in handleMouseUp 2");
-		// console.debug(select);
-
-		// if (select.isSelectingCells) {
-		// 	console.debug("in handleMouseUp with isSelectingCells");
-		// 	const val = selectFinish();
-		// 	console.debug("calling dispatch with action:"), console.debug(val);
-		// 	dispatchSelect(val);
-		// }
-
-		// document.removeEventListener("mouseup", handleMouseUp);
-		// document.removeEventListener("mousedown", handlePageClick);
+	const handleMouseDownRowHeader = (row: number) => {
+		const lastColumnIndex = table.model.columns.length - 1;
+		dispatchSelect(selectRowBegin(row, lastColumnIndex));
 	};
 
-	const handlePageClick = () => {
-		// console.debug("In handlePageClick");
-
-		// if (select.isSelectingCells) {
-		// 	dispatchSelect(selectClear());
-		// }
-
-		// document.removeEventListener("mouseup", handleMouseUp);
-		// document.removeEventListener("mousedown", handlePageClick);
+	const handleMouseOverRowHeader = (row: number) => {
+		if (select.isSelectingRows) {
+			const lastColumnIndex = table.model.columns.length - 1;
+			dispatchSelect(selectRowAdd(row, lastColumnIndex));
+		}
 	};
 
 	const handleContextMenu = () => {
@@ -103,7 +72,7 @@ const BodyRows = () => {
 				updateBodyCellValue(cell.id, columnIndex, rowIndex, value)
 			);
 		} else {
-			console.log("Error: column or row index not found");
+			console.error("Column or row index not found");
 		}
 	};
 
@@ -116,8 +85,8 @@ const BodyRows = () => {
 							<RowHeader
 								key={uuidv4()}
 								row={row.index}
-								onMouseDown={handleMouseDown}
-								onMouseOver={handleMouseOver}
+								onMouseDown={() => handleMouseDownRowHeader(row.index)}
+								onMouseOver={() => handleMouseOverRowHeader(row.index)}
 								onContextMenu={handleContextMenu}
 							/>
 							{columns.map((column, columnIndex) => {
@@ -141,13 +110,13 @@ const BodyRows = () => {
 												column.index
 											)}
 											onMouseDown={() =>
-												handleMouseDown(
+												handleMouseDownBodyCell(
 													row.index,
 													column.index
 												)
 											}
 											onMouseOver={() => {
-												handleMouseOver(
+												handleMouseOverBodyCell(
 													row.index,
 													column.index
 												);

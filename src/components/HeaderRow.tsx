@@ -1,4 +1,4 @@
-import { useSelect, useSelectDispatch } from 'context/SelectContext';
+import { useSelect, useSelectDispatch } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { updateHeaderCellValue } from 'data/cell-state-operations';
 import { addColumn } from 'data/column-state-operations';
@@ -12,21 +12,19 @@ import DataCell from './DataCell';
 
 const HeaderRow = () => {
 	const table = useTable();
-	// console.log("useTable: "); console.log(useTable)
 	const select = useSelect();
-	// console.log("useSelect: "); console.log(select)
 	const dispatchTable = useTableDispatch();
 	const dispatchSelect = useSelectDispatch();
 
 	const { headerCells, columns } = table.model;
 
-	const handleMouseDown = (column: number, event: MouseEvent) => {
-		const lastRowIndex = table.model.bodyRows.length;
+	const handleMouseDown = (column: number) => {
+		const lastRowIndex = table.model.bodyRows.length - 1;
 		dispatchSelect(selectColumnBegin(lastRowIndex, column));
 	};
 
-	const handleMouseOver = (column: number, event: MouseEvent) => {
-		const lastRowIndex = table.model.bodyRows.length;
+	const handleMouseOver = (column: number) => {
+		const lastRowIndex = table.model.bodyRows.length - 1;
 		if (select.isSelectingColumns) {
 			dispatchSelect(selectColumnAdd(lastRowIndex, column));
 		}
@@ -55,7 +53,7 @@ const HeaderRow = () => {
 		if (columnIndex != undefined) {
 			dispatchTable(updateHeaderCellValue(cell.id, columnIndex, value));
 		} else {
-			console.log("Error: column index not found in columnPositions");
+			console.error("Column index not found in columnPositions");
 		}
 	};
 
@@ -75,8 +73,8 @@ const HeaderRow = () => {
 								) as IColumn
 							}
 							className="column-header"
-							onMouseDown={handleMouseDown}
-							onMouseOver={handleMouseOver}
+							onMouseDown={() => handleMouseDown(column)}
+							onMouseOver={() => handleMouseOver(column)}
 							onDoubleClick={() => {}}
 							onContextMenu={handleContextMenu}
 							onChange={handleChange}

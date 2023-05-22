@@ -1,6 +1,6 @@
 import './react-datasheet.css';
 
-import SelectProvider from 'context/SelectContext';
+import SelectableProvider from 'context/SelectableContext';
 import TableProvider from 'context/TableContext';
 import React from 'react';
 import { ITableState } from 'types/table';
@@ -11,9 +11,9 @@ export const createSheet = (data: ITableState, onChange: any) => {
 	return (
 		<React.StrictMode>
 			<TableProvider onChange={onChange} initialState={data}>
-				<SelectProvider>
+				<SelectableProvider>
 					<DataSheet />
-				</SelectProvider>
+				</SelectableProvider>
 			</TableProvider>
 		</React.StrictMode>
 	);

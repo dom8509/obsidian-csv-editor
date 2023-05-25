@@ -1,9 +1,11 @@
+import { useEditable, useEditableDispatch } from 'context/EditableContext';
 import { useSelectable, useSelectableDispatch } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { updateBodyCellValue } from 'data/cell-state-operations';
+import { editCellBegin, editCellFinish, editFinish } from 'data/edit-operations';
 import { addRow } from 'data/row-state-operations';
 import {
-    selectCellAdd, selectCellBegin, selectRowAdd, selectRowBegin
+    selectCellAdd, selectCellBegin, selectClear, selectRowAdd, selectRowBegin
 } from 'data/select-operations';
 import { isSelected } from 'helper/select-helper';
 import { createBodyCell } from 'helper/table-helper';
@@ -19,19 +21,44 @@ import RowHeader from './RowHeader';
 const BodyRows = () => {
 	const table = useTable();
 	const selectable = useSelectable();
+	const editable = useEditable();
 	const dispatchTable = useTableDispatch();
 	const dispatchSelectable = useSelectableDispatch();
+	const dispatchEditable = useEditableDispatch();
 
 	const { bodyRows, columns, bodyCells } = table.model;
 
 	const handleMouseDownBodyCell = (row: number, column: number) => {
-		dispatchSelectable(selectCellBegin(row, column));
+		console.debug("in handleMouseDownBodyCell");
+
+		const isCellSelected =
+			selectable.start &&
+			selectable.end &&
+			selectable.start.row == selectable.end.row &&
+			selectable.start.row == row &&
+			selectable.start.column == selectable.end.column &&
+			selectable.start.column == column;
+
+		if (!isCellSelected) {
+			dispatchSelectable(selectCellBegin(row, column));
+			console.debug(editable.isEditing)
+			editable.isEditing && dispatchEditable(editFinish());
+		}
 	};
 
 	const handleMouseOverBodyCell = (row: number, column: number) => {
+		console.debug("in handleMouseOverBodyCell");
+
 		if (selectable.isSelectingCells) {
 			dispatchSelectable(selectCellAdd(row, column));
 		}
+	};
+
+	const handleDoubleClickBodyCell = (cellId: string) => {
+		console.debug("in handleDoubleClickBodyCell");
+
+		dispatchEditable(editCellBegin(cellId));
+		dispatchSelectable(selectClear());
 	};
 
 	const handleMouseDownRowHeader = (row: number) => {
@@ -85,8 +112,12 @@ const BodyRows = () => {
 							<RowHeader
 								key={uuidv4()}
 								row={row.index}
-								onMouseDown={() => handleMouseDownRowHeader(row.index)}
-								onMouseOver={() => handleMouseOverRowHeader(row.index)}
+								onMouseDown={() =>
+									handleMouseDownRowHeader(row.index)
+								}
+								onMouseOver={() =>
+									handleMouseOverRowHeader(row.index)
+								}
 								onContextMenu={handleContextMenu}
 							/>
 							{columns.map((column, columnIndex) => {
@@ -109,7 +140,8 @@ const BodyRows = () => {
 												row.index,
 												column.index
 											)}
-											onMouseDown={() =>
+											// onMouseDown={e => handleTest(e, row.index, column.index)}
+											onMouseDown={(event) =>
 												handleMouseDownBodyCell(
 													row.index,
 													column.index
@@ -121,8 +153,11 @@ const BodyRows = () => {
 													column.index
 												);
 											}}
-											onDoubleClick={() => {}}
-											onContextMenu={handleContextMenu}
+											onDoubleClick={() => {
+												handleDoubleClickBodyCell(
+													cell.id
+												);
+											}}
 											onChange={handleChange}
 										/>
 										<ColumnSeparator

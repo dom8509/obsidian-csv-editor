@@ -75,6 +75,9 @@ export default function SelectableProvider({ children }: Props) {
 	useEffect(() => {
 		const handlePageClick = (e: MouseEvent) => {
 			if (!dgDom.current || !dgDom.current.contains(e.target as Node)) {
+				console.debug(dgDom.current);
+				console.debug(e.target);
+				console.debug(e);
 				console.debug("clicked outside of sheed");
 
 				if (select.start || select.end) {
@@ -83,6 +86,9 @@ export default function SelectableProvider({ children }: Props) {
 				console.debug("removing click event");
 				document.removeEventListener("click", handlePageClick);
 			} else {
+				console.debug(dgDom.current);
+				console.debug(e.target);
+				console.debug(e);
 				console.debug("clicked sheet cell");
 			}
 		};

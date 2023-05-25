@@ -1,5 +1,6 @@
 import './react-datasheet.css';
 
+import EditableProvider from 'context/EditableContext';
 import SelectableProvider from 'context/SelectableContext';
 import TableProvider from 'context/TableContext';
 import React from 'react';
@@ -12,7 +13,9 @@ export const createSheet = (data: ITableState, onChange: any) => {
 		<React.StrictMode>
 			<TableProvider onChange={onChange} initialState={data}>
 				<SelectableProvider>
-					<DataSheet />
+					<EditableProvider>
+						<DataSheet />
+					</EditableProvider>
 				</SelectableProvider>
 			</TableProvider>
 		</React.StrictMode>

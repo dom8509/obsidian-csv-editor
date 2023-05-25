@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useEditable, useEditableDispatch } from 'context/EditableContext';
+import React from 'react';
 import { IBodyCell, IColumn, IHeaderCell } from 'types/table';
 
 import Cell from './Cell';
@@ -25,7 +26,7 @@ export interface DataCellProps {
 	onMouseDown: FunctionType;
 	onMouseOver: FunctionType;
 	onDoubleClick: FunctionType;
-	onContextMenu: FunctionType;
+	// onContextMenu: FunctionType;
 	onChange: FunctionType;
 	// onRevert: FunctionType;
 	// onEdit?: FunctionType;
@@ -61,7 +62,8 @@ export interface DataCellProps {
 // }
 
 const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
-	const [editing, setEditing] = useState(false);
+	const editable = useEditable();
+	const dispatchEditable = useEditableDispatch();
 
 	// timeout: NodeJS.Timeout;
 
@@ -137,14 +139,9 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 	// 	}
 	// }
 
-	const handleDoubleClick = (e: MouseEvent) => {
-		setEditing(true);
-	};
-
 	const handleChange = (value: string) => {
-		setEditing(false);
 		props.onChange(props.cell, value);
-	}
+	};
 
 	// handleContextMenu(e: MouseEvent) {
 	// 	const { row, col, onContextMenu, cell } = this.props;
@@ -174,6 +171,10 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 	// 	}
 	// }
 
+	const isEditing = (cellId: string): boolean => {
+		return editable.cellId ? editable.cellId === cellId : false;
+	};
+
 	const className = [
 		props.className,
 		"cell",
@@ -195,16 +196,18 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 			className={className}
 			onMouseDown={props.onMouseDown}
 			onMouseOver={props.onMouseOver}
-			onDoubleClick={handleDoubleClick}
-			onContextMenu={props.onContextMenu}
+			onDoubleClick={props.onDoubleClick}
+			// onContextMenu={props.onContextMenu}
 		>
-			{editing ? (
+			{isEditing(props.cell.id) ? (
 				<DataEditor
 					value={props.cell.markdown}
 					onChange={handleChange}
 				/>
 			) : (
-				<ValueViewer value={props.cell.markdown} />
+				<ValueViewer
+					value={props.cell.markdown}
+				/>
 			)}
 		</Cell>
 	);

@@ -4,8 +4,8 @@ import React, {
     createContext, Dispatch, ReactNode, useContext, useEffect, useReducer
 } from 'react';
 import {
-    EVENT_BODY_CELL_CLEARED, EVENT_BODY_CELL_UPDATED, EVENT_CELL_SELECTED, EVENT_COLUMN_ADDED,
-    EVENT_HEADER_CELL_CLEARED, EVENT_HEADER_CELL_UPDATED, EVENT_ROW_ADDED
+    EVENT_BODY_CELL_CLEARED, EVENT_BODY_CELL_UPDATED, EVENT_COLUMN_ADDED, EVENT_HEADER_CELL_CLEARED,
+    EVENT_HEADER_CELL_UPDATED, EVENT_ROW_ADDED
 } from 'types/events';
 
 import { IBodyCell, IHeaderCell, ISerializeableTableModel, ITableState } from '../types/table';
@@ -63,36 +63,6 @@ export default function TableProvider({
 
 const tableReducer = (prevState: ITableState, action: any): ITableState => {
 	switch (action.type) {
-		case EVENT_CELL_SELECTED: {
-			console.log("Action EVENT_CELL_SELECTED triggered");
-
-			const cellValuesCopy = structuredClone(
-				prevState.serialization.cellValues
-			);
-			cellValuesCopy[action.payload.rowIndex][action.payload.columnIndex] =
-				action.payload.value;
-
-			return {
-				...prevState,
-				model: {
-					...prevState.model,
-					bodyCells: prevState.model.bodyCells.map((cell) => {
-						if (cell.id == action.payload.cellId) {
-							return {
-								...cell,
-								[action.payload.key as keyof IHeaderCell]:
-									action.payload.value,
-							};
-						}
-						return cell;
-					}),
-				},
-				serialization: {
-					...prevState.serialization,
-					cellValues: cellValuesCopy,
-				},
-			};
-		}
 		case EVENT_HEADER_CELL_UPDATED: {
 			console.log("Action EVENT_HEADER_CELL_UPDATED triggered");
 

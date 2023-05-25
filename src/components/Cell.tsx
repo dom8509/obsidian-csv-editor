@@ -11,7 +11,7 @@ export interface CellProps {
 	onMouseDown: FunctionType;
 	onMouseOver: FunctionType;
 	onDoubleClick: FunctionType;
-	onContextMenu: FunctionType;
+	// onContextMenu: FunctionType;
 	className?: string;
 	children?: ReactNode;
 }
@@ -24,8 +24,8 @@ const Cell: React.FC<CellProps> = (props: CellProps) => {
 			onMouseDown={props.onMouseDown}
 			onMouseOver={props.onMouseOver}
 			onDoubleClick={props.onDoubleClick}
-			onTouchEnd={props.onDoubleClick}
-			onContextMenu={props.onContextMenu}
+			// onTouchEnd={props.onDoubleClick}
+			// onContextMenu={props.onContextMenu}
 		>
 			{props.children}
 		</td>

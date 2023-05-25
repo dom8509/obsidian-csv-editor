@@ -5,7 +5,13 @@ export interface ValueViewerProps {
 }
 
 const ValueViewer: React.FC<ValueViewerProps> = (props: ValueViewerProps) => {
-	return <span className="value-viewer">{props.value}</span>;
+	return (
+		<span
+			className="value-viewer"
+		>
+			{props.value}
+		</span>
+	);
 };
 
 export default ValueViewer;

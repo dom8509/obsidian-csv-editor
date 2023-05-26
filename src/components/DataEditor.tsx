@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useOutsideClick } from 'hooks/use-outside-click';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ENTER_KEY, ESCAPE_KEY } from 'types/keys';
 
 type FunctionType = (...args: any[]) => any;
@@ -9,8 +10,16 @@ export interface DataEditorProps {
 }
 
 const DataEditor: React.FC<DataEditorProps> = (props: DataEditorProps) => {
-	const input = useRef<HTMLInputElement>(null);
 	const [value, setValue] = useState(props.value);
+
+	const handleOutSideClick = () => {
+		console.log("handleOutSideClick");
+		props.onChange(value);
+	};
+
+	const inputRef = useOutsideClick<HTMLInputElement>(handleOutSideClick, [
+		handleOutSideClick,
+	]);
 
 	const handleChange = (e: any) => {
 		setValue(e.target.value);
@@ -26,14 +35,14 @@ const DataEditor: React.FC<DataEditorProps> = (props: DataEditorProps) => {
 	};
 
 	useEffect(() => {
-		if (input.current) {
-			input.current.focus();
+		if (inputRef.current) {
+			inputRef.current.focus();
 		}
 	}, []);
 
 	return (
 		<input
-			ref={input}
+			ref={inputRef}
 			className="data-editor"
 			value={value}
 			onChange={handleChange}

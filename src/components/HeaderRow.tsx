@@ -76,7 +76,7 @@ const HeaderRow = () => {
 							onMouseDown={() => handleMouseDown(column)}
 							onMouseOver={() => handleMouseOver(column)}
 							onDoubleClick={() => {}}
-							onContextMenu={handleContextMenu}
+							// onContextMenu={handleContextMenu}
 							onChange={handleChange}
 						/>
 						<ColumnSeparator

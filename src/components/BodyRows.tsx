@@ -1,8 +1,8 @@
-import { useEditable, useEditableDispatch } from 'context/EditableContext';
+import { useEditable } from 'context/EditableContext';
 import { useSelectable, useSelectableDispatch } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { updateBodyCellValue } from 'data/cell-state-operations';
-import { editCellBegin, editCellFinish, editFinish } from 'data/edit-operations';
+import { editCellFinish, editCellStart } from 'data/edit-operations';
 import { addRow } from 'data/row-state-operations';
 import {
     selectCellAdd, selectCellBegin, selectClear, selectRowAdd, selectRowBegin
@@ -21,55 +21,62 @@ import RowHeader from './RowHeader';
 const BodyRows = () => {
 	const table = useTable();
 	const selectable = useSelectable();
-	const editable = useEditable();
+	const [editable, dispatchEditable] = useEditable();
 	const dispatchTable = useTableDispatch();
 	const dispatchSelectable = useSelectableDispatch();
-	const dispatchEditable = useEditableDispatch();
 
 	const { bodyRows, columns, bodyCells } = table.model;
 
-	const handleMouseDownBodyCell = (row: number, column: number) => {
+	const handleMouseDownBodyCell = (column: number, row: number) => {
 		console.debug("in handleMouseDownBodyCell");
+
+		const isNotEditing = editable.cellId === undefined;
 
 		const isCellSelected =
 			selectable.start &&
 			selectable.end &&
-			selectable.start.row == selectable.end.row &&
-			selectable.start.row == row &&
 			selectable.start.column == selectable.end.column &&
-			selectable.start.column == column;
+			selectable.start.column == column &&
+			selectable.start.row == selectable.end.row &&
+			selectable.start.row == row;
 
-		if (!isCellSelected) {
-			dispatchSelectable(selectCellBegin(row, column));
-			console.debug(editable.isEditing)
-			editable.isEditing && dispatchEditable(editFinish());
+		if (!isCellSelected && isNotEditing) {
+			dispatchSelectable(selectCellBegin(column, row));
+			// editable.cellId && dispatchEditable(editCellFinish());
+			// console.debug(editable.isEditing)
+			// editable.isEditing && dispatchEditable(editCellCommit());
 		}
 	};
 
-	const handleMouseOverBodyCell = (row: number, column: number) => {
+	const handleMouseOverBodyCell = (column: number, row: number) => {
 		console.debug("in handleMouseOverBodyCell");
 
 		if (selectable.isSelectingCells) {
-			dispatchSelectable(selectCellAdd(row, column));
+			dispatchSelectable(selectCellAdd(column, row));
 		}
 	};
 
-	const handleDoubleClickBodyCell = (cellId: string) => {
+	const handleDoubleClickBodyCell = (
+		cellId: string,
+		column: number,
+		row: number,
+		value: string
+	) => {
 		console.debug("in handleDoubleClickBodyCell");
 
-		dispatchEditable(editCellBegin(cellId));
-		dispatchSelectable(selectClear());
+		dispatchEditable(editCellStart(cellId));
+		// dispatchSelectable(selectClear());
 	};
 
 	const handleMouseDownRowHeader = (row: number) => {
 		const lastColumnIndex = table.model.columns.length - 1;
-		dispatchSelectable(selectRowBegin(row, lastColumnIndex));
+		dispatchSelectable(selectRowBegin(lastColumnIndex, row));
 	};
 
 	const handleMouseOverRowHeader = (row: number) => {
 		if (selectable.isSelectingRows) {
 			const lastColumnIndex = table.model.columns.length - 1;
-			dispatchSelectable(selectRowAdd(row, lastColumnIndex));
+			dispatchSelectable(selectRowAdd(lastColumnIndex, row));
 		}
 	};
 
@@ -98,6 +105,7 @@ const BodyRows = () => {
 			dispatchTable(
 				updateBodyCellValue(cell.id, columnIndex, rowIndex, value)
 			);
+			editable.cellId && dispatchEditable(editCellFinish());
 		} else {
 			console.error("Column or row index not found");
 		}
@@ -120,19 +128,19 @@ const BodyRows = () => {
 								}
 								onContextMenu={handleContextMenu}
 							/>
-							{columns.map((column, columnIndex) => {
+							{columns.map((column) => {
 								const cell =
 									bodyCells.find(
 										(cell) =>
-											cell.rowId === row.id &&
-											cell.columnId === column.id
+											cell.columnId === column.id &&
+											cell.rowId === row.id
 									) || createBodyCell(column.id, row.id);
 
 								return (
 									<React.Fragment key={cell.id}>
 										<DataCell
-											row={row.index}
 											column={column.index}
+											row={row.index}
 											cell={cell}
 											columnData={column}
 											selected={isSelected(
@@ -143,26 +151,29 @@ const BodyRows = () => {
 											// onMouseDown={e => handleTest(e, row.index, column.index)}
 											onMouseDown={(event) =>
 												handleMouseDownBodyCell(
-													row.index,
-													column.index
+													column.index,
+													row.index
 												)
 											}
 											onMouseOver={() => {
 												handleMouseOverBodyCell(
-													row.index,
-													column.index
+													column.index,
+													row.index
 												);
 											}}
 											onDoubleClick={() => {
 												handleDoubleClickBodyCell(
-													cell.id
+													cell.id,
+													column.index,
+													row.index,
+													cell.markdown
 												);
 											}}
 											onChange={handleChange}
 										/>
 										<ColumnSeparator
-											row={row.index}
 											col={column.index}
+											row={row.index}
 											key={uuidv4()}
 											onMouseDown={() => {}}
 											onDoubleClick={() => {}}

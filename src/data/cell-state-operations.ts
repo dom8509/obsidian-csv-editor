@@ -37,6 +37,19 @@ export const updateBodyCellValue = (
 	},
 });
 
+export const setBodyCellEditingMode = (
+	id: string,
+	column: number,
+	row: number,
+) => ({
+	type: EVENT_BODY_CELL_UPDATED,
+	payload: {
+		cellId: id,
+		columnIndex: column,
+		rowIndex: row,
+	},
+});
+
 export const clearBodyCell = (id: string, column: number, row: number) => ({
 	type: EVENT_BODY_CELL_CLEARED,
 	payload: {

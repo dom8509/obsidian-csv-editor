@@ -1,12 +1,12 @@
-import { EVENT_EDIT_CELL_STARTED, EVENT_EDIT_FINISHED } from 'types/events';
+import { EVENT_EDIT_CELL_FINISHED, EVENT_EDIT_CELL_STARTED } from 'types/events';
 
-export const editCellBegin = (cellId: string) => ({
+export const editCellStart = (cellId: string) => ({
 	type: EVENT_EDIT_CELL_STARTED,
 	payload: {
 		cellId,
 	},
 });
 
-export const editFinish = () => ({
-	type: EVENT_EDIT_FINISHED,
+export const editCellFinish = () => ({
+	type: EVENT_EDIT_CELL_FINISHED,
 });

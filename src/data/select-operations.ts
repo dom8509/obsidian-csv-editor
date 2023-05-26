@@ -4,51 +4,51 @@ import {
     EVENT_SELECT_ROW_STARTED, EVENT_SELECT_ROW_UPDATED
 } from 'types/events';
 
-export const selectCellBegin = (row: number, column: number) => ({
+export const selectCellBegin = (column: number, row: number) => ({
 	type: EVENT_SELECT_CELL_STARTED,
 	payload: {
-		row,
 		column,
+		row,
 	},
 });
 
-export const selectCellAdd = (row: number, column: number) => ({
+export const selectCellAdd = (column: number, row: number) => ({
 	type: EVENT_SELECT_CELL_UPDATED,
 	payload: {
-		row,
 		column,
+		row,
 	},
 });
 
-export const selectRowBegin = (row: number, column: number) => ({
+export const selectRowBegin = (column: number, row: number) => ({
 	type: EVENT_SELECT_ROW_STARTED,
 	payload: {
-		row,
 		column,
+		row,
 	},
 });
 
-export const selectRowAdd = (row: number, column: number) => ({
+export const selectRowAdd = (column: number, row: number) => ({
 	type: EVENT_SELECT_ROW_UPDATED,
 	payload: {
-		row,
 		column,
+		row,
 	},
 });
 
-export const selectColumnBegin = (row: number, column: number) => ({
+export const selectColumnBegin = (column: number, row: number) => ({
 	type: EVENT_SELECT_COLUMN_STARTED,
 	payload: {
-		row: row,
-		column: column,
+		column,
+		row,
 	},
 });
 
-export const selectColumnAdd = (row: number, column: number) => ({
+export const selectColumnAdd = (column: number, row: number) => ({
 	type: EVENT_SELECT_COLUMN_UPDATED,
 	payload: {
-		row,
 		column,
+		row,
 	},
 });
 

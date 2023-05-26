@@ -13,9 +13,7 @@ export const createSheet = (data: ITableState, onChange: any) => {
 		<React.StrictMode>
 			<TableProvider onChange={onChange} initialState={data}>
 				<SelectableProvider>
-					<EditableProvider>
-						<DataSheet />
-					</EditableProvider>
+					<DataSheet />
 				</SelectableProvider>
 			</TableProvider>
 		</React.StrictMode>

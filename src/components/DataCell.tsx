@@ -1,4 +1,4 @@
-import { useEditable, useEditableDispatch } from 'context/EditableContext';
+import { useEditable } from 'context/EditableContext';
 import React from 'react';
 import { IBodyCell, IColumn, IHeaderCell } from 'types/table';
 
@@ -62,8 +62,7 @@ export interface DataCellProps {
 // }
 
 const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
-	const editable = useEditable();
-	const dispatchEditable = useEditableDispatch();
+	const [editable] = useEditable();
 
 	// timeout: NodeJS.Timeout;
 
@@ -205,9 +204,7 @@ const DataCell: React.FC<DataCellProps> = (props: DataCellProps) => {
 					onChange={handleChange}
 				/>
 			) : (
-				<ValueViewer
-					value={props.cell.markdown}
-				/>
+				<ValueViewer value={props.cell.markdown} />
 			)}
 		</Cell>
 	);

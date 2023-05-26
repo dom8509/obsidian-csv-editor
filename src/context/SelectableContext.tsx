@@ -8,16 +8,16 @@ import {
 } from 'types/events';
 
 type SelectedCellType = {
-	row: number; // Row index
 	column: number; // Colum index
+	row: number; // Row index
 };
 
 export type SelectedCellsType = {
 	start?: SelectedCellType;
 	end?: SelectedCellType;
 	isSelectingCells: boolean;
-	isSelectingRows: boolean;
 	isSelectingColumns: boolean;
+	isSelectingRows: boolean;
 };
 
 interface Props {
@@ -55,16 +55,16 @@ export const useSelectableDispatch = () => {
 export default function SelectableProvider({ children }: Props) {
 	const [select, dispatch] = useReducer(selectReducer, {
 		isSelectingCells: false,
-		isSelectingRows: false,
 		isSelectingColumns: false,
+		isSelectingRows: false,
 	});
 	const dgDom = useRef<HTMLSpanElement>(null);
 
 	const isSelecting = () => {
 		return (
 			select.isSelectingCells ||
-			select.isSelectingRows ||
-			select.isSelectingColumns
+			select.isSelectingColumns ||
+			select.isSelectingRows
 		);
 	};
 
@@ -75,10 +75,7 @@ export default function SelectableProvider({ children }: Props) {
 	useEffect(() => {
 		const handlePageClick = (e: MouseEvent) => {
 			if (!dgDom.current || !dgDom.current.contains(e.target as Node)) {
-				console.debug(dgDom.current);
-				console.debug(e.target);
-				console.debug(e);
-				console.debug("clicked outside of sheed");
+				console.log("clicked outside of sheed");
 
 				if (select.start || select.end) {
 					dispatch({ type: EVENT_SELECT_CLEARED });
@@ -86,18 +83,15 @@ export default function SelectableProvider({ children }: Props) {
 				console.debug("removing click event");
 				document.removeEventListener("click", handlePageClick);
 			} else {
-				console.debug(dgDom.current);
-				console.debug(e.target);
-				console.debug(e);
-				console.debug("clicked sheet cell");
+				console.log("clicked sheet cell");
 			}
 		};
 
 		const handleMouseUp = () => {
 			if (
 				select.isSelectingCells ||
-				select.isSelectingRows ||
-				select.isSelectingColumns
+				select.isSelectingColumns ||
+				select.isSelectingRows
 			) {
 				dispatch({ type: EVENT_SELECT_FINISHED });
 			}
@@ -141,12 +135,12 @@ const selectReducer = (
 			return {
 				...prevState,
 				start: {
-					row: action.payload.row,
 					column: action.payload.column,
+					row: action.payload.row,
 				},
 				end: {
-					row: action.payload.row,
 					column: action.payload.column,
+					row: action.payload.row,
 				},
 				isSelectingCells: true,
 			};
@@ -160,8 +154,8 @@ const selectReducer = (
 				return {
 					...prevState,
 					end: {
-						row: action.payload.row,
 						column: action.payload.column,
+						row: action.payload.row,
 					},
 				};
 			}
@@ -176,8 +170,8 @@ const selectReducer = (
 					column: 0,
 				},
 				end: {
-					row: action.payload.row,
 					column: action.payload.column,
+					row: action.payload.row,
 				},
 				isSelectingRows: true,
 			};
@@ -191,8 +185,8 @@ const selectReducer = (
 				return {
 					...prevState,
 					end: {
-						row: action.payload.row,
 						column: action.payload.column,
+						row: action.payload.row,
 					},
 				};
 			}
@@ -207,8 +201,8 @@ const selectReducer = (
 					column: action.payload.column,
 				},
 				end: {
-					row: action.payload.row,
 					column: action.payload.column,
+					row: action.payload.row,
 				},
 				isSelectingColumns: true,
 			};
@@ -222,8 +216,8 @@ const selectReducer = (
 				return {
 					...prevState,
 					end: {
-						row: action.payload.row,
 						column: action.payload.column,
+						row: action.payload.row,
 					},
 				};
 			}
@@ -234,8 +228,8 @@ const selectReducer = (
 			return {
 				...prevState,
 				isSelectingCells: false,
-				isSelectingRows: false,
 				isSelectingColumns: false,
+				isSelectingRows: false,
 			};
 		}
 		case EVENT_SELECT_CLEARED: {

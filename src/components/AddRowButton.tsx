@@ -9,7 +9,7 @@ export interface AddRowButtonProps {
 const AddRowButton: React.FC<AddRowButtonProps> = (
 	props: AddRowButtonProps
 ) => {
-	const className = ["cell", "read-only", "add-header-btn"]
+	const className = ["cell", "read-only", "button"]
 		.filter((a) => a)
 		.join(" ");
 

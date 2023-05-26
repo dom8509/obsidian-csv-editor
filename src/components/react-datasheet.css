@@ -15,7 +15,7 @@ span.data-sheet-container:focus {
 
 .data-sheet-container .data-sheet .column-header,
 .data-sheet-container .data-sheet .row-header,
-.data-sheet-container .data-sheet .add-header-btn {
+.data-sheet-container .data-sheet .button {
 	font-weight: bold !important;
 	text-align: center !important;
 	min-width: 30px !important;
@@ -135,6 +135,6 @@ span.data-sheet-container:focus {
 }
 
 
-.data-sheet-container .data-sheet .add-header-btn {
-	cursor: default !important;
+.data-sheet-container .data-sheet .button {
+	cursor: pointer !important;
 }

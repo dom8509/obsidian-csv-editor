@@ -21,6 +21,19 @@ const HeaderRow = () => {
 
 	const { headerCells, columns } = table.model;
 
+	const handleMouseDownBooble = () => {
+		console.debug("in HeaderRow::handleMouseDownBooble");
+
+		const isNotEditing = editable.cellId === undefined;
+
+		if (isNotEditing) {
+			const lastColumnIndex = table.model.columns.length - 1;
+			const lastRowIndex = table.model.bodyRows.length - 1;
+			dispatchSelectable(selectColumnBegin(0, lastRowIndex));
+			dispatchSelectable(selectColumnAdd(lastColumnIndex, lastRowIndex));
+		}
+	};
+
 	const handleMouseDown = (column: number) => {
 		console.debug("in HeaderRow::handleMouseDown");
 
@@ -79,12 +92,16 @@ const HeaderRow = () => {
 			editable.cellId && dispatchEditable(editCellFinish());
 		} else {
 			console.error("Column index not found in columnPositions");
-		}	
+		}
 	};
 
 	return (
 		<tr>
-			<th key="booble" className="cell read-only" />
+			<th
+				key="booble"
+				className="cell read-only"
+				onMouseDown={handleMouseDownBooble}
+			/>
 			{headerCells.map((cell, column) => {
 				return (
 					<React.Fragment key={cell.id}>

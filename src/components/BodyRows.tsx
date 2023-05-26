@@ -17,6 +17,7 @@ import AddRowButton from './AddRowButton';
 import ColumnSeparator from './ColumnSeparator';
 import DataCell from './DataCell';
 import RowHeader from './RowHeader';
+import RowSeparator from './RowSeparator';
 
 const BodyRows = () => {
 	const table = useTable();
@@ -166,6 +167,31 @@ const BodyRows = () => {
 											onDoubleClick={() => {}}
 											onContextMenu={() => {}}
 										/>
+									</React.Fragment>
+								);
+							})}
+						</tr>
+						<tr>
+							<RowSeparator
+								row={row.index}
+								col={0}
+								key={uuidv4()}
+								// onMouseDown={this.onMouseDown}
+								// onDoubleClick={() => {}}
+								// onContextMenu={this.onContextMenu}
+							/>
+							{columns.map((column) => {
+								return (
+									<React.Fragment key={uuidv4()}>
+										<RowSeparator
+											row={row.index}
+											col={column.index}
+											key={uuidv4()}
+											// onMouseDown={this.onMouseDown}
+											// onDoubleClick={() => {}}
+											// onContextMenu={this.onContextMenu}
+										/>
+										<td className="cell read-only separator" />
 									</React.Fragment>
 								);
 							})}

@@ -42,9 +42,6 @@ const BodyRows = () => {
 
 		if (!isCellSelected && isNotEditing) {
 			dispatchSelectable(selectCellBegin(column, row));
-			// editable.cellId && dispatchEditable(editCellFinish());
-			// console.debug(editable.isEditing)
-			// editable.isEditing && dispatchEditable(editCellCommit());
 		}
 	};
 
@@ -56,16 +53,10 @@ const BodyRows = () => {
 		}
 	};
 
-	const handleDoubleClickBodyCell = (
-		cellId: string,
-		column: number,
-		row: number,
-		value: string
-	) => {
+	const handleDoubleClickBodyCell = (cellId: string) => {
 		console.debug("in handleDoubleClickBodyCell");
 
 		dispatchEditable(editCellStart(cellId));
-		// dispatchSelectable(selectClear());
 	};
 
 	const handleMouseDownRowHeader = (row: number) => {
@@ -148,7 +139,6 @@ const BodyRows = () => {
 												row.index,
 												column.index
 											)}
-											// onMouseDown={e => handleTest(e, row.index, column.index)}
 											onMouseDown={(event) =>
 												handleMouseDownBodyCell(
 													column.index,
@@ -163,10 +153,7 @@ const BodyRows = () => {
 											}}
 											onDoubleClick={() => {
 												handleDoubleClickBodyCell(
-													cell.id,
-													column.index,
-													row.index,
-													cell.markdown
+													cell.id
 												);
 											}}
 											onChange={handleChange}

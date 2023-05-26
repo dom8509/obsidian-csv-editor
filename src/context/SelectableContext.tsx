@@ -1,5 +1,6 @@
+import { useOutsideClick } from 'hooks/use-outside-click';
 import React, {
-    createContext, Dispatch, ReactNode, useContext, useEffect, useReducer, useRef
+    createContext, Dispatch, ReactNode, useContext, useEffect, useReducer
 } from 'react';
 import {
     EVENT_SELECT_CELL_STARTED, EVENT_SELECT_CELL_UPDATED, EVENT_SELECT_CLEARED,
@@ -58,8 +59,6 @@ export default function SelectableProvider({ children }: Props) {
 		isSelectingColumns: false,
 		isSelectingRows: false,
 	});
-	const dgDom = useRef<HTMLSpanElement>(null);
-
 	const isSelecting = () => {
 		return (
 			select.isSelectingCells ||
@@ -72,21 +71,18 @@ export default function SelectableProvider({ children }: Props) {
 		return select.start || select.end;
 	};
 
+	const handleOutSideClick = () => {
+		console.log("handleOutSideClick");
+		if (isSelected()) {
+			dispatch({ type: EVENT_SELECT_CLEARED });
+		}
+	};
+
+	const containerRef = useOutsideClick<HTMLSpanElement>(handleOutSideClick, [
+		handleOutSideClick,
+	]);
+
 	useEffect(() => {
-		const handlePageClick = (e: MouseEvent) => {
-			if (!dgDom.current || !dgDom.current.contains(e.target as Node)) {
-				console.log("clicked outside of sheed");
-
-				if (select.start || select.end) {
-					dispatch({ type: EVENT_SELECT_CLEARED });
-				}
-				console.debug("removing click event");
-				document.removeEventListener("click", handlePageClick);
-			} else {
-				console.log("clicked sheet cell");
-			}
-		};
-
 		const handleMouseUp = () => {
 			if (
 				select.isSelectingCells ||
@@ -97,26 +93,19 @@ export default function SelectableProvider({ children }: Props) {
 			}
 		};
 
-		// Keep listening to mouse if user releases the mouse (dragging outside)
-		// Listen for any outside mouse clicks
-		if (isSelected()) {
-			document.addEventListener("click", handlePageClick);
-		}
-
 		if (isSelecting()) {
 			document.addEventListener("mouseup", handleMouseUp);
 		}
 
 		return () => {
-			document.removeEventListener("click", handlePageClick);
 			document.removeEventListener("mouseup", handleMouseUp);
 		};
-	}, [select, dgDom]);
+	}, [select, containerRef]);
 
 	return (
 		<SelectableContext.Provider value={select}>
 			<SelectableDispatchContext.Provider value={dispatch}>
-				<span className="select-container" ref={dgDom}>
+				<span className="select-container" ref={containerRef}>
 					{children}
 				</span>
 			</SelectableDispatchContext.Provider>

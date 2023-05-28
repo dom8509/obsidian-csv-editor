@@ -1,68 +1,35 @@
 import React, { ReactNode } from 'react';
-
-import { CellShapeType } from './CellShape';
+import { IBodyCell, IFooterCell, IHeaderCell } from 'types/table';
 
 type FunctionType = (...args: any[]) => any;
 
 export interface CellProps {
 	row: number;
-	col: number;
-	cell: CellShapeType;
+	column: number;
+	cell: IBodyCell | IHeaderCell | IFooterCell;
 	selected?: boolean;
-	editing?: boolean;
-	updated?: boolean;
-	attributesRenderer?: FunctionType;
 	onMouseDown: FunctionType;
 	onMouseOver: FunctionType;
 	onDoubleClick: FunctionType;
-	onContextMenu: FunctionType;
+	// onContextMenu: FunctionType;
 	className?: string;
-	style?: React.CSSProperties;
 	children?: ReactNode;
 }
 
-export default class Cell extends React.Component<CellProps> {
-	static defaultProps = {
-		selected: false,
-		editing: false,
-		updated: false,
-		attributesRenderer: () => {},
-	};
+const Cell: React.FC<CellProps> = (props: CellProps) => {
+	return (
+		<td
+			key={props.cell.id}
+			className={props.className}
+			onMouseDown={props.onMouseDown}
+			onMouseOver={props.onMouseOver}
+			onDoubleClick={props.onDoubleClick}
+			// onTouchEnd={props.onDoubleClick}
+			// onContextMenu={props.onContextMenu}
+		>
+			{props.children}
+		</td>
+	);
+};
 
-	render() {
-		const {
-			cell,
-			row,
-			col,
-			attributesRenderer,
-			className,
-			style,
-			onMouseDown,
-			onMouseOver,
-			onDoubleClick,
-			onContextMenu,
-		} = this.props;
-
-		const { colSpan, rowSpan } = cell;
-		const attributes = attributesRenderer
-			? attributesRenderer(cell, row, col)
-			: {};
-
-		return (
-			<td
-				className={className}
-				onMouseDown={onMouseDown}
-				onMouseOver={onMouseOver}
-				onDoubleClick={onDoubleClick}
-				onTouchEnd={onDoubleClick}
-				onContextMenu={onContextMenu}
-				colSpan={colSpan}
-				rowSpan={rowSpan}
-				style={style}
-				{...attributes}
-			>
-				{this.props.children}
-			</td>
-		);
-	}
-}
+export default Cell;

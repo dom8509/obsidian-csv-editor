@@ -1,6 +1,6 @@
 {
-	"id": "obsidian-csv-file-editor",
-	"name": "CSV File Editor",
+	"id": "awesome-obsidian-csv-file-editor",
+	"name": "Awesome CSV File Editor",
 	"version": "0.0.1",
 	"minAppVersion": "1.1.1",
 	"description": "Open and edit CSV Files in Obsidian.",

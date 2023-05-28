@@ -1,55 +1,54 @@
-import React from 'react';
-
-import { CellShapeType } from './CellShape';
+import { useOutsideClick } from 'hooks/use-outside-click';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ENTER_KEY, ESCAPE_KEY } from 'types/keys';
 
 type FunctionType = (...args: any[]) => any;
 
 export interface DataEditorProps {
-	value: any;
-	row: number;
-	col: number;
-	cell: CellShapeType;
+	value: string;
 	onChange: FunctionType;
-	onCommit: FunctionType;
-	onRevert: FunctionType;
-	onKeyDown: FunctionType;
 }
 
-export interface DataEditorState {
-	_input: FunctionType;
-}
+const DataEditor: React.FC<DataEditorProps> = (props: DataEditorProps) => {
+	const [value, setValue] = useState(props.value);
 
-export default class DataEditor extends React.Component<
-	DataEditorProps,
-	DataEditorState
-> {
-	private _input: any;
+	const handleOutSideClick = () => {
+		console.log("handleOutSideClick");
+		props.onChange(value);
+	};
 
-	constructor(props: DataEditorProps) {
-		super(props);
-		this.handleChange = this.handleChange.bind(this);
-	}
+	const inputRef = useOutsideClick<HTMLInputElement>(handleOutSideClick, [
+		handleOutSideClick,
+	]);
 
-	componentDidMount() {
-		this._input.focus();
-	}
+	const handleChange = (e: any) => {
+		setValue(e.target.value);
+	};
 
-	handleChange(e: any) {
-		this.props.onChange(e.target.value);
-	}
+	const handleKeyDown = (e: any) => {
+		const keyCode = e.key;
+		if (keyCode === ENTER_KEY) {
+			props.onChange(value);
+		} else if (keyCode === ESCAPE_KEY) {
+			props.onChange(props.value);
+		}
+	};
 
-	render() {
-		const { value, onKeyDown } = this.props;
-		return (
-			<input
-				ref={(input) => {
-					this._input = input;
-				}}
-				className="data-editor"
-				value={value}
-				onChange={this.handleChange}
-				onKeyDown={onKeyDown}
-			/>
-		);
-	}
-}
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, []);
+
+	return (
+		<input
+			ref={inputRef}
+			className="data-editor"
+			value={value}
+			onChange={handleChange}
+			onKeyDown={handleKeyDown}
+		/>
+	);
+};
+
+export default DataEditor;

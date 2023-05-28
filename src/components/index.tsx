@@ -1,21 +1,21 @@
+import './react-datasheet.css';
+
+import EditableProvider from 'context/EditableContext';
+import SelectableProvider from 'context/SelectableContext';
+import TableProvider from 'context/TableContext';
 import React from 'react';
+import { ITableState } from 'types/table';
 
-import Cell from './Cell';
-import { CsvSheet, CsvSheetProps } from './CsvSheet';
-import DataEditor from './DataEditor';
 import DataSheet from './DataSheet';
-import { renderData, renderValue } from './renderHelpers';
-import Row from './Row';
-import Sheet from './Sheet';
-import ValueViewer from './ValueViewer';
 
-export { DataSheet, Sheet, Row, Cell, DataEditor, ValueViewer, renderValue, renderData };
-
-export function createSheet(props: CsvSheetProps) {
-	console.log(props)
+export const createSheet = (data: ITableState, onChange: any) => {
 	return (
 		<React.StrictMode>
-			<CsvSheet {...props} />
+			<TableProvider onChange={onChange} initialState={data}>
+				<SelectableProvider>
+					<DataSheet />
+				</SelectableProvider>
+			</TableProvider>
 		</React.StrictMode>
 	);
-}
+};

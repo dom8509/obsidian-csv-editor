@@ -1,17 +1,17 @@
 import React from 'react';
 
-import { CellShapeType } from './CellShape';
-
 export interface ValueViewerProps {
-	row: number;
-	col: number;
-	cell: CellShapeType;
-	value: any;
+	value: string;
 }
 
-export default class ValueViewer extends React.Component<ValueViewerProps> {
-	render() {
-		const { value } = this.props;
-		return <span className="value-viewer">{value}</span>;
-	}
-}
+const ValueViewer: React.FC<ValueViewerProps> = (props: ValueViewerProps) => {
+	return (
+		<span
+			className="value-viewer"
+		>
+			{props.value}
+		</span>
+	);
+};
+
+export default ValueViewer;

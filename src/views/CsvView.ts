@@ -1,7 +1,7 @@
 import { createSheet } from 'components';
 import { deserializeData, serializeData } from 'helper/data-serializer';
 import CsvTablePlugin from 'main';
-import { Menu, Notice, TextFileView, WorkspaceLeaf } from 'obsidian';
+import { TextFileView, WorkspaceLeaf } from 'obsidian';
 import { createRoot } from 'react-dom/client';
 import { ISerializeableTableModel } from 'types/table';
 
@@ -23,7 +23,6 @@ export class CsvView extends TextFileView {
 		console.log(this.plugin);
 
 		this.handleChange = this.handleChange.bind(this);
-		this.handleContextMenu = this.handleContextMenu.bind(this);
 	}
 
 	getViewType(): string {
@@ -49,10 +48,23 @@ export class CsvView extends TextFileView {
 			"Open as Markdown",
 			this.markdownAction.bind(this)
 		);
+		this.addAction("arrow-right", "Redo", this.markdownAction.bind(this));
+		this.addAction("arrow-left", "Undo", this.markdownAction.bind(this));
+		this.addAction(
+			"clipboard-paste",
+			"Paste",
+			this.markdownAction.bind(this)
+		);
+		this.addAction(
+			"clipboard-copy",
+			"Copy",
+			this.markdownAction.bind(this)
+		);
+		this.addAction("scissors", "Cut", this.markdownAction.bind(this));
 	}
 
 	getViewData(): string {
-		console.log("DEBUG: getViewData called")
+		console.log("DEBUG: getViewData called");
 		return this.data;
 	}
 
@@ -79,33 +91,9 @@ export class CsvView extends TextFileView {
 	}
 
 	handleChange(data: ISerializeableTableModel) {
-		console.log("DEBUG: handleChange called")
+		console.log("DEBUG: handleChange called");
 		this.data = serializeData(data);
 		this.requestSave();
-	}
-
-	handleContextMenu(event: any, cell: any, i: number, j: number) {
-		const menu = new Menu();
-
-		menu.addItem((item) =>
-			item
-				.setTitle("Copy")
-				.setIcon("documents")
-				.onClick(() => {
-					new Notice("Copied");
-				})
-		);
-
-		menu.addItem((item) =>
-			item
-				.setTitle("Paste")
-				.setIcon("paste")
-				.onClick(() => {
-					new Notice("Pasted");
-				})
-		);
-
-		menu.showAtMouseEvent(event);
 	}
 
 	markdownAction() {

@@ -1,4 +1,5 @@
 import EditableProvider from 'context/EditableContext';
+import { useContextMenu } from 'hooks/use-context-menu';
 import React from 'react';
 
 import BodyRows from './BodyRows';
@@ -6,6 +7,7 @@ import HeaderRow from './HeaderRow';
 
 const DataSheet = () => {
 	// const dispatchTable = useTableDispatch();
+	const handleContextMenu = useContextMenu();
 
 	// const handleCommit = (
 	// 	cellId: string,
@@ -20,7 +22,7 @@ const DataSheet = () => {
 
 	return (
 		<EditableProvider>
-			<span className="data-sheet-container">
+			<span className="data-sheet-container" onContextMenu={handleContextMenu}>
 				<table className="data-sheet">
 					<tbody>
 						{/* header row */}

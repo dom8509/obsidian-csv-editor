@@ -249,7 +249,8 @@ const tableReducer = (prevState: ITableState, action: any): ITableState => {
 			};
 		}
 		default: {
-			throw Error("Unknown action: " + action.type);
+			console.error("Unknown action: " + action.type);
+			return prevState;
 		}
 	}
 };

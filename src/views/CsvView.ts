@@ -3,14 +3,18 @@ import { deserializeData, serializeData } from 'helper/data-serializer';
 import CsvTablePlugin from 'main';
 import { TextFileView, WorkspaceLeaf } from 'obsidian';
 import { createRoot } from 'react-dom/client';
+import { IObsidianCsvView } from 'types/obsidian';
 import { ISerializeableTableModel } from 'types/table';
 
 export const VIEW_TYPE_CSV = "csv-view";
 
-export class CsvView extends TextFileView {
+export class CsvView extends TextFileView implements IObsidianCsvView {
 	containerEl: HTMLElement;
 	data: string;
 	plugin: CsvTablePlugin;
+	cutCallback: any = undefined;
+	copyCallback: any = undefined;
+	pasteCallback: any = undefined;
 
 	public get extContentEl(): HTMLElement {
 		return this.contentEl;
@@ -53,14 +57,14 @@ export class CsvView extends TextFileView {
 		this.addAction(
 			"clipboard-paste",
 			"Paste",
-			this.markdownAction.bind(this)
+			this.handlePasteCallback.bind(this)
 		);
 		this.addAction(
 			"clipboard-copy",
 			"Copy",
-			this.markdownAction.bind(this)
+			this.handleCopyCallback.bind(this)
 		);
-		this.addAction("scissors", "Cut", this.markdownAction.bind(this));
+		this.addAction("scissors", "Cut", this.handleCutCallback.bind(this));
 	}
 
 	getViewData(): string {
@@ -81,7 +85,7 @@ export class CsvView extends TextFileView {
 		const rootEl = createRoot(containerEl);
 
 		const tableData = deserializeData(data, true);
-		const sheet = createSheet(tableData, this.handleChange);
+		const sheet = createSheet(tableData, this, this.handleChange);
 
 		rootEl.render(sheet);
 	}
@@ -90,15 +94,48 @@ export class CsvView extends TextFileView {
 		this.contentEl.empty();
 	}
 
-	handleChange(data: ISerializeableTableModel) {
-		console.log("DEBUG: handleChange called");
-		this.data = serializeData(data);
-		this.requestSave();
-	}
-
 	markdownAction() {
 		// this.plugin.databaseFileModes[this.leaf.id || this.file.path] =
 		//     InputType.MARKDOWN;
 		this.plugin.setMarkdownView(this.leaf);
+	}
+
+	handleChange(data: ISerializeableTableModel) {
+		console.debug("DEBUG: CsvView::handleChange called");
+		this.data = serializeData(data);
+		this.requestSave();
+	}
+
+	handleCutCallback(): void {
+		if (this.cutCallback) {
+			this.cutCallback();
+		}
+	}
+
+	handleCopyCallback(): void {
+		if (this.copyCallback) {
+			this.copyCallback();
+		}
+	}
+
+	handlePasteCallback(): void {
+		if (this.pasteCallback) {
+			this.pasteCallback();
+		}
+	}
+
+	registerCutCallback(cb: any): void {
+		this.cutCallback = cb;
+		console.debug("DEBUG: CsvView::registerCutCallback called");
+	}
+
+	registerCopyCallback(cb: any): void {
+		this.copyCallback = cb;
+		console.debug("DEBUG: CsvView::registerCopyCallback called");
+	}
+
+	registerPasteCallback(cb: any): void {
+		this.pasteCallback = cb;
+		console.debug("DEBUG: CsvView::registerPasteCallback called");
 	}
 }

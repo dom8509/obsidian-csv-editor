@@ -5,7 +5,7 @@ export type EditingCellsType = {
 	cellId: string | undefined;
 };
 
-interface SelectableContextProps {
+interface EditableContextProps {
 	children: ReactNode;
 }
 
@@ -32,7 +32,7 @@ export const useEditable = (): [
 
 export default function EditableProvider({
 	children,
-}: SelectableContextProps) {
+}: EditableContextProps) {
 	const [editable, dispatch] = useReducer(editableReducer, {
 		cellId: undefined,
 	});
@@ -68,7 +68,8 @@ const editableReducer = (
 			};
 		}
 		default: {
-			throw Error("Unknown action: " + action.type);
+			console.log("Unknown action: " + action.type);
+			return prevState;
 		}
 	}
 };

@@ -7,7 +7,7 @@ export interface AddColumnButtonProps {
 }
 
 const AddColumnButton: React.FC<AddColumnButtonProps> = (props: AddColumnButtonProps) => {
-	const className = ["cell", "read-only", "button"]
+	const className = ["cell", "button"]
 		.filter((a) => a)
 		.join(" ");
 

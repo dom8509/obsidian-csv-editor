@@ -17,7 +17,6 @@ const RowHeader: React.FC<RowHeaderProps> = (props: RowHeaderProps) => {
 	const className = [
 		"cell",
 		props.selected && "selected",
-		"read-only",
 		"row-header",
 	]
 		.filter((a) => a)

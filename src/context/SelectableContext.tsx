@@ -8,7 +8,7 @@ import {
     EVENT_SELECT_ROW_STARTED, EVENT_SELECT_ROW_UPDATED
 } from 'types/events';
 
-type SelectedCellType = {
+export type SelectedCellType = {
 	column: number; // Colum index
 	row: number; // Row index
 };
@@ -59,6 +59,7 @@ export default function SelectableProvider({ children }: Props) {
 		isSelectingColumns: false,
 		isSelectingRows: false,
 	});
+
 	const isSelecting = () => {
 		return (
 			select.isSelectingCells ||
@@ -84,6 +85,7 @@ export default function SelectableProvider({ children }: Props) {
 
 	useEffect(() => {
 		const handleMouseUp = () => {
+			console.log("In handleMouseUp");
 			if (
 				select.isSelectingCells ||
 				select.isSelectingColumns ||
@@ -94,13 +96,15 @@ export default function SelectableProvider({ children }: Props) {
 		};
 
 		if (isSelecting()) {
+			console.log("Register mouseup event")
+			console.log(select);
 			document.addEventListener("mouseup", handleMouseUp);
 		}
 
 		return () => {
 			document.removeEventListener("mouseup", handleMouseUp);
 		};
-	}, [select, containerRef]);
+	}, [select]);
 
 	return (
 		<SelectableContext.Provider value={select}>
@@ -231,7 +235,8 @@ const selectReducer = (
 			};
 		}
 		default: {
-			throw Error("Unknown action: " + action.type);
+			console.error("Unknown action: " + action.type);
+			return prevState;
 		}
 	}
 };

@@ -14,7 +14,6 @@ export const useOutsideClick = <T extends HTMLElement>(
 	}
 
 	useEffect(() => {
-		console.log("rerender")
 		const handleClick = (event: MouseEvent) => {
 			console.log(event)
 			if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -25,11 +24,9 @@ export const useOutsideClick = <T extends HTMLElement>(
 			}
 		};
 
-		console.log("adding click event")
 		document.addEventListener("click", handleClick, true);
 
 		return () => {
-			console.log("removing click event")
 			document.removeEventListener("click", handleClick, true);
 		};
 	}, [ref, ...dependencyList]);

@@ -137,4 +137,6 @@ span.data-sheet-container:focus {
 
 .data-sheet-container .data-sheet .button {
 	cursor: pointer !important;
+	background-color: whitesmoke;
+	color: black;
 }

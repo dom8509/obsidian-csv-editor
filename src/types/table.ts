@@ -185,3 +185,13 @@ export interface ITableState extends IBaseTableState {
 	serialization: ISerializeableTableModel;
 	hashIndizes: IHashIndexModel;
 }
+
+export type CellPositionType = {
+	column: number;
+	row: number;
+}
+
+export type CellRangeType = {
+	start: CellPositionType;
+	end: CellPositionType;
+}

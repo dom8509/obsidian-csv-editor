@@ -24,9 +24,9 @@ const HeaderRow = () => {
 	const handleMouseDownBooble = () => {
 		console.debug("in HeaderRow::handleMouseDownBooble");
 
-		const isNotEditing = editable.cellId === undefined;
+		const isEditing = editable.cellId != undefined;
 
-		if (isNotEditing) {
+		if (!isEditing) {
 			const lastColumnIndex = table.model.columns.length - 1;
 			const lastRowIndex = table.model.bodyRows.length - 1;
 			dispatchSelectable(selectColumnBegin(0, lastRowIndex));
@@ -37,15 +37,9 @@ const HeaderRow = () => {
 	const handleMouseDown = (column: number) => {
 		console.debug("in HeaderRow::handleMouseDown");
 
-		const isNotEditing = editable.cellId === undefined;
+		const isEditing = editable.cellId != undefined;
 
-		const isCellSelected =
-			selectable.start &&
-			selectable.end &&
-			selectable.start.column == selectable.end.column &&
-			selectable.start.column == column;
-
-		if (!isCellSelected && isNotEditing) {
+		if (!isEditing) {
 			const lastRowIndex = table.model.bodyRows.length - 1;
 			dispatchSelectable(selectColumnBegin(column, lastRowIndex));
 		}

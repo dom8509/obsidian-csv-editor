@@ -5,11 +5,12 @@ import { updateBodyCellValue } from 'data/cell-state-operations';
 import { editCellFinish, editCellStart } from 'data/edit-operations';
 import { addRow } from 'data/row-state-operations';
 import {
-    selectCellAdd, selectCellBegin, selectClear, selectRowAdd, selectRowBegin
+    selectCellAdd, selectCellBegin, selectRowAdd, selectRowBegin
 } from 'data/select-operations';
 import { isSelected } from 'helper/select-helper';
 import { createBodyCell } from 'helper/table-helper';
 import React from 'react';
+import { LEFT_MOUSE_BTN, RIGHT_MOUSE_BTN } from 'types/mouse';
 import { IBodyCell } from 'types/table';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,10 +29,14 @@ const BodyRows = () => {
 
 	const { bodyRows, columns, bodyCells } = table.model;
 
-	const handleMouseDownBodyCell = (column: number, row: number) => {
-		console.debug("in handleMouseDownBodyCell");
+	const handleMouseDownBodyCell = (
+		event: MouseEvent,
+		column: number,
+		row: number
+	) => {
+		console.log("in handleMouseDownBodyCell");
 
-		const isNotEditing = editable.cellId === undefined;
+		const isEditing = editable.cellId != undefined;
 
 		const isCellSelected =
 			selectable.start &&
@@ -41,28 +46,40 @@ const BodyRows = () => {
 			selectable.start.row == selectable.end.row &&
 			selectable.start.row == row;
 
-		if (!isCellSelected && isNotEditing) {
+		if (
+			(event.button === LEFT_MOUSE_BTN &&
+				!isCellSelected &&
+				!isEditing) /* handled by EditableContext Click */ ||
+			(event.button === RIGHT_MOUSE_BTN &&
+				!isSelected(selectable, row, column))
+		) {
 			dispatchSelectable(selectCellBegin(column, row));
 		}
 	};
 
 	const handleMouseOverBodyCell = (column: number, row: number) => {
-		console.debug("in handleMouseOverBodyCell");
+		console.log("in handleMouseOverBodyCell");
 
 		if (selectable.isSelectingCells) {
 			dispatchSelectable(selectCellAdd(column, row));
 		}
 	};
 
-	const handleDoubleClickBodyCell = (cellId: string) => {
+	const handleDoubleClickBodyCell = (event: MouseEvent, cellId: string) => {
 		console.debug("in handleDoubleClickBodyCell");
 
-		dispatchEditable(editCellStart(cellId));
+		if (event.button === LEFT_MOUSE_BTN) {
+			dispatchEditable(editCellStart(cellId));
+		}
 	};
 
 	const handleMouseDownRowHeader = (row: number) => {
-		const lastColumnIndex = table.model.columns.length - 1;
-		dispatchSelectable(selectRowBegin(lastColumnIndex, row));
+		const isEditing = editable.cellId != undefined;
+
+		if (!isEditing) {
+			const lastColumnIndex = table.model.columns.length - 1;
+			dispatchSelectable(selectRowBegin(lastColumnIndex, row));
+		}
 	};
 
 	const handleMouseOverRowHeader = (row: number) => {
@@ -71,18 +88,6 @@ const BodyRows = () => {
 			dispatchSelectable(selectRowAdd(lastColumnIndex, row));
 		}
 	};
-
-	const handleContextMenu = () => {
-		//TODO: implement me
-	};
-
-	// const handleMouseDownSeparator = () => {
-	// 	//TODO: implement me
-	// };
-
-	// const handleDoubleClickSeparator = () => {
-	// 	//TODO: implement me
-	// };
 
 	const handleAddRowClicked = () => {
 		dispatchTable(addRow());
@@ -118,7 +123,7 @@ const BodyRows = () => {
 								onMouseOver={() =>
 									handleMouseOverRowHeader(row.index)
 								}
-								onContextMenu={handleContextMenu}
+								onContextMenu={() => {}}
 							/>
 							{columns.map((column) => {
 								const cell =
@@ -142,6 +147,7 @@ const BodyRows = () => {
 											)}
 											onMouseDown={(event) =>
 												handleMouseDownBodyCell(
+													event,
 													column.index,
 													row.index
 												)
@@ -152,8 +158,9 @@ const BodyRows = () => {
 													row.index
 												);
 											}}
-											onDoubleClick={() => {
+											onDoubleClick={(event) => {
 												handleDoubleClickBodyCell(
+													event,
 													cell.id
 												);
 											}}

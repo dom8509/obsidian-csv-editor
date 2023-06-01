@@ -1,11 +1,17 @@
-import { Menu, Notice } from 'obsidian';
+import { Menu } from 'obsidian';
 import { useState } from 'react';
 
-export const useContextMenu = () => {
+export const useContextMenu = (
+	handleCut: any,
+	handleCopy: any,
+	handlePaste: any
+) => {
 	const [isCut, setCut] = useState(false);
 	const [isCopied, setCopied] = useState(false);
 
 	return (event: any) => {
+		console.log("In handleContextMenu");
+
 		const menu = new Menu();
 
 		menu.addItem((item) =>
@@ -13,7 +19,7 @@ export const useContextMenu = () => {
 				.setTitle("Cut")
 				.setIcon("scissors")
 				.onClick(() => {
-					new Notice("Cut");
+					handleCut();
 					setCut(true);
 				})
 		);
@@ -22,7 +28,7 @@ export const useContextMenu = () => {
 				.setTitle("Copy")
 				.setIcon("clipboard-copy")
 				.onClick(() => {
-					new Notice("Copied");
+					handleCopy();
 					setCopied(true);
 				})
 		);
@@ -32,7 +38,7 @@ export const useContextMenu = () => {
 				.setIcon("clipboard-paste")
 				.setDisabled(!isCut && !isCopied)
 				.onClick(() => {
-					new Notice("Pasted");
+					handlePaste();
 					setCut(false);
 					setCopied(false);
 				})

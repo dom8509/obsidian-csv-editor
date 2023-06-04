@@ -34,7 +34,7 @@ export class CsvView extends TextFileView implements IObsidianCsvView {
 	}
 
 	getDisplayText(): string {
-		return "CSV View";
+		return this.file.basename;
 	}
 
 	// is called BEFORE the TextView is rendered

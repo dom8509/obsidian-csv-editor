@@ -97,7 +97,7 @@ export default function SelectableProvider({ children }: Props) {
 
 		if (isSelecting()) {
 			console.log("Register mouseup event")
-			console.log(select);
+			// console.log(select);
 			document.addEventListener("mouseup", handleMouseUp);
 		}
 

@@ -6,7 +6,7 @@ import { addColumn } from 'data/column-state-operations';
 import { editCellFinish, editCellStart } from 'data/edit-operations';
 import { selectClear, selectColumnAdd, selectColumnBegin } from 'data/select-operations';
 import React from 'react';
-import { IColumn, IHeaderCell } from 'types/table';
+import { IHeaderCell } from 'types/table';
 
 import AddColumnButton from './AddColumnButton';
 import ColumnSeparator from './ColumnSeparator';
@@ -74,7 +74,7 @@ const HeaderRow = () => {
 	};
 
 	const handleAddColumnClicked = () => {
-		dispatchTable(addColumn());
+		dispatchTable(addColumn(columns.length));
 	};
 
 	const handleChange = (cell: IHeaderCell, value: string) => {
@@ -89,6 +89,10 @@ const HeaderRow = () => {
 		}
 	};
 
+	console.log(
+		"Columns: ",
+		columns.sort((a, b) => a.index - b.index)
+	);
 	return (
 		<tr>
 			<th
@@ -96,29 +100,30 @@ const HeaderRow = () => {
 				className="cell read-only"
 				onMouseDown={handleMouseDownBooble}
 			/>
-			{headerCells.map((cell, column) => {
+			{columns.map((column, columnIndex) => {
+				const headerCell = headerCells
+					.filter((cell) => cell.columnId === column.id)
+					.first() as IHeaderCell;
+				console.log(headerCell);
 				return (
-					<React.Fragment key={cell.id}>
+					<React.Fragment key={headerCell.id}>
 						<DataCell
 							row={0}
-							column={column}
-							cell={cell}
-							columnData={
-								columns.find(
-									(column) => column.id == cell.columnId
-								) as IColumn
-							}
+							column={columnIndex}
+							cell={headerCell}
+							columnData={column}
 							className="column-header"
-							onMouseDown={() => handleMouseDown(column)}
-							onMouseOver={() => handleMouseOver(column)}
-							onDoubleClick={() => handleDoubleClick(cell.id)}
-							// onContextMenu={handleContextMenu}
+							onMouseDown={() => handleMouseDown(columnIndex)}
+							onMouseOver={() => handleMouseOver(columnIndex)}
+							onDoubleClick={() =>
+								headerCell && handleDoubleClick(headerCell.id)
+							}
 							onChange={handleChange}
 						/>
 						<ColumnSeparator
 							row={0}
-							col={column}
-							key={`${cell.id}-sep`}
+							col={columnIndex}
+							key={`${headerCell.id}-sep`}
 							onMouseDown={handleMouseDownSeparator}
 							onDoubleClick={handleDoubleClickSeparator}
 							onContextMenu={handleContextMenu}

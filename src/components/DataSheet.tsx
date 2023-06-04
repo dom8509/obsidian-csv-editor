@@ -1,11 +1,13 @@
 import EditableProvider from 'context/EditableContext';
 import { usePlugin } from 'context/PluginContext';
 import { SelectedCellType, useSelectable } from 'context/SelectableContext';
-import { useTableDispatch } from 'context/TableContext';
+import { useTable, useTableDispatch } from 'context/TableContext';
 import { copySelectedData } from 'data/cell-state-operations';
 import { clipboardAddCopy, clipboardAddCut } from 'data/clipboard-operations';
+import { addColumn, deleteColumns } from 'data/column-state-operations';
+import { addRow, deleteRow, deleteRows } from 'data/row-state-operations';
 import { ClipboardOperationType, useClipboard } from 'hooks/use-clipboard';
-import { useContextMenu } from 'hooks/use-context-menu';
+import { ContextMenuItemsType, useContextMenu } from 'hooks/use-context-menu';
 import { Notice } from 'obsidian';
 import React from 'react';
 
@@ -13,11 +15,12 @@ import BodyRows from './BodyRows';
 import HeaderRow from './HeaderRow';
 
 const DataSheet = () => {
+	const table = useTable();
 	const selectable = useSelectable();
 	const [clipboard, dispatchClipboard] = useClipboard();
 	const dispatchTable = useTableDispatch();
 
-	const handleCut = (start: SelectedCellType, end: SelectedCellType) => {
+	const handleCut = () => {
 		const isSelecting =
 			selectable.isSelectingCells ||
 			selectable.isSelectingColumns ||
@@ -36,7 +39,7 @@ const DataSheet = () => {
 		new Notice("Cut");
 	};
 
-	const handleCopy = (start: SelectedCellType, end: SelectedCellType) => {
+	const handleCopy = () => {
 		const isSelecting =
 			selectable.isSelectingCells ||
 			selectable.isSelectingColumns ||
@@ -55,7 +58,7 @@ const DataSheet = () => {
 		new Notice("Copied");
 	};
 
-	const handlePaste = (cell: SelectedCellType) => {
+	const handlePaste = () => {
 		console.log("Clipboard:");
 		console.log(clipboard);
 
@@ -81,11 +84,72 @@ const DataSheet = () => {
 		new Notice("Pasted");
 	};
 
-	const handleContextMenu = useContextMenu(
-		handleCut,
-		handleCopy,
-		handlePaste
-	);
+	const handleNewBefore = () => {
+		console.log("In handleNewBefore");
+		if (selectable.start && selectable.end) {
+			if (selectable.isSelectingColumns) {
+				dispatchTable(addColumn(selectable.start.column));
+			} else if (selectable.isSelectingRows) {
+				dispatchTable(addRow(selectable.start.row));
+			}
+		}
+	};
+
+	const handleNewAfter = () => {
+		console.log("In handleNewAfter");
+		if (selectable.start && selectable.end) {
+			if (selectable.isSelectingColumns) {
+				dispatchTable(addColumn(selectable.start.column + 1));
+			} else if (selectable.isSelectingRows) {
+				dispatchTable(addRow(selectable.start.row + 1));
+			}
+		}
+	};
+
+	const handleDelete = () => {
+		console.log("In handle delete");
+		if (selectable.start && selectable.end) {
+			if (selectable.isSelectingColumns) {
+				dispatchTable(
+					deleteColumns(selectable.start.column, selectable.end.column)
+				);
+			} else if (selectable.isSelectingRows) {
+				dispatchTable(
+					deleteRows(selectable.start.row, selectable.end.row)
+				);
+			}
+		}
+	};
+
+	const handleShowTableData = () => {
+		console.log(table);
+	};
+
+	const contextMenu = useContextMenu();
+
+	const handleContextMenu = (event: any) => {
+		let operations: ContextMenuItemsType = {
+			onCut: handleCopy,
+			onCopy: handleCopy,
+			onPaste: handlePaste,
+			onShowTableData: handleShowTableData,
+		};
+
+		if (selectable.isSelectingCells) {
+			contextMenu(event, operations);
+		} else if (
+			selectable.isSelectingColumns ||
+			selectable.isSelectingRows
+		) {
+			operations = {
+				...operations,
+				onNewBefore: handleNewBefore,
+				onNewAfter: handleNewAfter,
+				onDelete: handleDelete,
+			};
+			contextMenu(event, operations);
+		}
+	};
 
 	const plugin = usePlugin();
 	plugin.registerCutCallback(handleCut);

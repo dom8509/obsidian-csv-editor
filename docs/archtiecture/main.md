@@ -48,3 +48,4 @@ classDiagram
 
     CsvTablePlugin ..> CsvView : creates
 ```
+

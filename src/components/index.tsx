@@ -15,7 +15,7 @@ export const createSheet = (
 	onChange: any
 ) => {
 	return (
-		<React.StrictMode>
+		// <React.StrictMode>
 			<PluginProvider plugin={plugin}>
 				<TableProvider onChange={onChange} initialState={data}>
 					<SelectableProvider>
@@ -23,6 +23,6 @@ export const createSheet = (
 					</SelectableProvider>
 				</TableProvider>
 			</PluginProvider>
-		</React.StrictMode>
+		// </React.StrictMode>
 	);
 };

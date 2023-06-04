@@ -24,7 +24,7 @@ export class CsvView extends TextFileView implements IObsidianCsvView {
 		super(leaf);
 
 		this.plugin = plugin;
-		console.log(this.plugin);
+		// console.log(this.plugin);
 
 		this.handleChange = this.handleChange.bind(this);
 	}

@@ -90,7 +90,7 @@ const BodyRows = () => {
 	};
 
 	const handleAddRowClicked = () => {
-		dispatchTable(addRow());
+		dispatchTable(addRow(table.model.bodyRows.length));
 	};
 
 	const handleChange = (cell: IBodyCell, value: string) => {

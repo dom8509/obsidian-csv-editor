@@ -24,23 +24,30 @@
 
 .data-sheet-container .data-sheet-table .cell {
   cursor: cell;
-  /* transition: background-color 500ms ease; */
-  vertical-align: middle;
-  /* text-align: right; */
   border-right: 0.1px solid #ddd;
   border-bottom: 0.1px solid #ddd;
   border-color: rgb(54, 54, 54);
-  /* border-right: 1px; */
   padding: 5px;
 }
 
 .data-sheet-container .data-sheet-table .cell.selected {
+  transition: background-color 500ms ease;
   background-color: whitesmoke;
   color: black;
 }
 
 .data-sheet-container .data-sheet-table .body-cell {
   text-align: right;
+  vertical-align: middle;
+}
+
+.data-sheet-container .data-sheet-table .body-cell > input {
+  outline: none !important;
+  background: none;
+  color: black;
+  text-align: right;
+  width: 100%;
+  border: 0px;
 }
 
 .data-sheet-container .data-sheet-table .row-header-cell {

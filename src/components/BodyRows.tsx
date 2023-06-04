@@ -110,10 +110,15 @@ const BodyRows = () => {
 
 	return (
 		<React.Fragment key={uuidv4()}>
-			{bodyRows.map((row) => {
+			{bodyRows.map((row, rowIndex) => {
+				const className = [
+					"body-row",
+					rowIndex % 2 === 0 && "shadow-row",
+				].join(" ");
+
 				return (
 					<React.Fragment key={uuidv4()}>
-						<tr key={uuidv4()}>
+						<tr key={uuidv4()} className={className}>
 							<RowHeader
 								key={uuidv4()}
 								row={row.index}
@@ -136,6 +141,7 @@ const BodyRows = () => {
 								return (
 									<React.Fragment key={cell.id}>
 										<DataCell
+											className="body-cell"
 											column={column.index}
 											row={row.index}
 											cell={cell}
@@ -166,26 +172,23 @@ const BodyRows = () => {
 											}}
 											onChange={handleChange}
 										/>
-										<ColumnSeparator
+										{/* <ColumnSeparator
 											col={column.index}
 											row={row.index}
 											key={uuidv4()}
 											onMouseDown={() => {}}
 											onDoubleClick={() => {}}
 											onContextMenu={() => {}}
-										/>
+										/> */}
 									</React.Fragment>
 								);
 							})}
 						</tr>
-						<tr>
+						{/* <tr>
 							<RowSeparator
 								row={row.index}
 								col={0}
 								key={uuidv4()}
-								// onMouseDown={this.onMouseDown}
-								// onDoubleClick={() => {}}
-								// onContextMenu={this.onContextMenu}
 							/>
 							{columns.map((column) => {
 								return (
@@ -194,15 +197,12 @@ const BodyRows = () => {
 											row={row.index}
 											col={column.index}
 											key={uuidv4()}
-											// onMouseDown={this.onMouseDown}
-											// onDoubleClick={() => {}}
-											// onContextMenu={this.onContextMenu}
 										/>
-										<td className="cell read-only separator" />
+										<td className="separator" />
 									</React.Fragment>
 								);
 							})}
-						</tr>
+						</tr> */}
 					</React.Fragment>
 				);
 			})}

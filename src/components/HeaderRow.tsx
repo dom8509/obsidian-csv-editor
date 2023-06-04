@@ -97,7 +97,7 @@ const HeaderRow = () => {
 		<tr>
 			<th
 				key="booble"
-				className="cell read-only"
+				className="cell"
 				onMouseDown={handleMouseDownBooble}
 			/>
 			{columns.map((column, columnIndex) => {
@@ -112,7 +112,7 @@ const HeaderRow = () => {
 							column={columnIndex}
 							cell={headerCell}
 							columnData={column}
-							className="column-header"
+							className="column-header-cell"
 							onMouseDown={() => handleMouseDown(columnIndex)}
 							onMouseOver={() => handleMouseOver(columnIndex)}
 							onDoubleClick={() =>
@@ -120,14 +120,14 @@ const HeaderRow = () => {
 							}
 							onChange={handleChange}
 						/>
-						<ColumnSeparator
+						{/* <ColumnSeparator
 							row={0}
 							col={columnIndex}
 							key={`${headerCell.id}-sep`}
 							onMouseDown={handleMouseDownSeparator}
 							onDoubleClick={handleDoubleClickSeparator}
 							onContextMenu={handleContextMenu}
-						/>
+						/> */}
 					</React.Fragment>
 				);
 			})}

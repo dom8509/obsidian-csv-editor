@@ -13,7 +13,7 @@ export interface RowSeparatorProps {
 const RowSeparator: React.FC<RowSeparatorProps> = (
 	props: RowSeparatorProps
 ) => {
-	const className = ["cell", "row-separator"].filter((a) => a).join(" ");
+	const className = ["row-separator"].filter((a) => a).join(" ");
 
 	return (
 		<td

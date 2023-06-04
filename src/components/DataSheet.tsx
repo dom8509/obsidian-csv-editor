@@ -1,11 +1,11 @@
 import EditableProvider from 'context/EditableContext';
 import { usePlugin } from 'context/PluginContext';
-import { SelectedCellType, useSelectable } from 'context/SelectableContext';
+import { useSelectable } from 'context/SelectableContext';
 import { useTable, useTableDispatch } from 'context/TableContext';
 import { copySelectedData } from 'data/cell-state-operations';
 import { clipboardAddCopy, clipboardAddCut } from 'data/clipboard-operations';
 import { addColumn, deleteColumns } from 'data/column-state-operations';
-import { addRow, deleteRow, deleteRows } from 'data/row-state-operations';
+import { addRow, deleteRows } from 'data/row-state-operations';
 import { ClipboardOperationType, useClipboard } from 'hooks/use-clipboard';
 import { ContextMenuItemsType, useContextMenu } from 'hooks/use-context-menu';
 import { Notice } from 'obsidian';
@@ -111,7 +111,10 @@ const DataSheet = () => {
 		if (selectable.start && selectable.end) {
 			if (selectable.isSelectingColumns) {
 				dispatchTable(
-					deleteColumns(selectable.start.column, selectable.end.column)
+					deleteColumns(
+						selectable.start.column,
+						selectable.end.column
+					)
 				);
 			} else if (selectable.isSelectingRows) {
 				dispatchTable(
@@ -162,10 +165,11 @@ const DataSheet = () => {
 				className="data-sheet-container"
 				onContextMenu={handleContextMenu}
 			>
-				<table className="data-sheet">
-					<tbody>
-						{/* header row */}
+				<table className="data-sheet-table">
+					<thead>
 						<HeaderRow />
+					</thead>
+					<tbody>
 						<BodyRows />
 					</tbody>
 				</table>

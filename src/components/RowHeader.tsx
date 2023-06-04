@@ -15,9 +15,9 @@ export interface RowHeaderProps {
 
 const RowHeader: React.FC<RowHeaderProps> = (props: RowHeaderProps) => {
 	const className = [
+		"row-header-cell",
 		"cell",
 		props.selected && "selected",
-		"row-header",
 	]
 		.filter((a) => a)
 		.join(" ");

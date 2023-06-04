@@ -14,24 +14,28 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background-color: var(--background-primary); /* Optional: Add a background color to the pinned row */
+}
+
+.data-sheet-container .data-sheet-table th:first-child,
+.data-sheet-container .data-sheet-table td:first-child {
+  position: sticky;
+  left: 0;
 }
 
 .data-sheet-container .data-sheet-table .column-header-cell {
   color: var(--text-faint);
   text-align: center;
+  background-color: var(--background-primary);
 }
 
 .data-sheet-container .data-sheet-table .cell {
   cursor: cell;
-  border-right: 0.1px solid #ddd;
-  border-bottom: 0.1px solid #ddd;
-  border-color: rgb(54, 54, 54);
+  border-right: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
   padding: 5px;
 }
 
 .data-sheet-container .data-sheet-table .cell.selected {
-  transition: background-color 500ms ease;
   background-color: whitesmoke;
   color: black;
 }

@@ -97,7 +97,7 @@ const HeaderRow = () => {
 		<tr>
 			<th
 				key="booble"
-				className="cell"
+				className="column-header-cell cell"
 				onMouseDown={handleMouseDownBooble}
 			/>
 			{columns.map((column, columnIndex) => {
